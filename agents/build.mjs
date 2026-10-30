@@ -28,7 +28,7 @@ const llm = customSecretId
         api_type: "chat_completions",
       },
     }
-  : { llm: "gemini-2.5-flash" };
+  : { llm: "gemini-3.1-flash-lite" };
 
 const shared = read("prompts/_shared.md");
 
@@ -51,7 +51,7 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
           ignore_default_personality: true,
           backup_llm_config: customSecretId
             ? { preference: "disabled" }
-            : { preference: "override", order: ["gemini-2.5-flash-lite"] },
+            : { preference: "override", order: ["gemini-2.5-flash"] },
           built_in_tools: {
             language_detection: { type: "system", name: "language_detection", pre_tool_speech: "off", params: { system_tool_type: "language_detection" } },
           },
@@ -106,4 +106,4 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
   writeFileSync(join(root, "agent_configs", `${id}.json`), JSON.stringify(config, null, 2) + "\n");
 }
 
-console.log(`Wrote ${Object.keys(CHARACTERS).length} agent configs (${customSecretId ? "Claude via custom LLM" : "temporary Gemini"}, ${useLibraryVoices ? "library" : "placeholder"} voices).`);
+console.log(`Wrote ${Object.keys(CHARACTERS).length} agent configs (${customSecretId ? "Claude via custom LLM" : "Gemini 3.1 Flash-Lite"}, ${useLibraryVoices ? "library" : "placeholder"} voices).`);

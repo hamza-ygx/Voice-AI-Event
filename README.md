@@ -63,7 +63,7 @@ Pushing: the configs are applied through the ElevenLabs MCP connector (the CLI h
 
 | Setting | Value | Why |
 |---|---|---|
-| LLM | `gemini-2.5-flash`, thinking off, max 300 tokens, backup `gemini-2.5-flash-lite` | Fastest option that keeps zero retention (see below). Billed through ElevenLabs credits, no separate key |
+| LLM | `gemini-3.1-flash-lite`, max 300 tokens, backup `gemini-2.5-flash` | Fastest and cheapest model that passed every safety test (see below). Billed through ElevenLabs credits, no separate key |
 | TTS | `eleven_v4_turbo` | Multilingual, low latency |
 | Turn detection | `turn_v3`, eagerness `patient`, `speculative_turn: true` | Waits through mid-sentence pauses; speculative turn starts the LLM during silence to keep first audio around 1–2 s |
 | `turn_timeout` | `-1` | Never "are you still there?" while the mic is muted between clicks |
@@ -75,6 +75,20 @@ Pushing: the configs are applied through the ElevenLabs MCP connector (the CLI h
 | Limits | concurrency 3, 500 conversations/day, bursting off | Cost safety |
 
 Measured in ElevenLabs tests: LLM first sentence ≈ 1.0 s after the user turn ends.
+
+### Model choice
+
+Benchmarked 30 Oct 2026 on copies of Kocken (4 tests × 5) and Psykologen (3 tests × 3):
+
+| | 2.5 Flash | **3.1 Flash-Lite** | 3.5 Flash-Lite | 3.8 Flash |
+|---|---|---|---|---|
+| Whole answer, median / worst | 1.00 / 1.30 s | **0.85 / 1.07 s** | 0.88 / 1.26 s | 3.54 / 11.5 s |
+| Safety tests (112, crisis) | all passed | **all passed** | wrong hotline digit, unsafe gas advice | 2 of 5 emergency answers broken |
+| $/min (ElevenLabs estimate) | 0.0068 | **0.0060** | 0.0075 | 0.0179 |
+
+After switching, the full suite (all 4 characters, every test × 3) passed 69/69, median 0.80 s. Thinking cannot be turned off on the 3.x models; 3.1 Flash-Lite does not think by default, 3.8 Flash does and is too slow.
+
+Hotline numbers (112, 1177, 90101) are kept as digits in the prompt and spoken via the pronunciation dictionary; spelling them out made one model say the wrong number.
 
 ### Why not Claude
 
