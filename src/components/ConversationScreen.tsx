@@ -8,6 +8,13 @@ import type { Character } from "@/lib/characters";
 const IDLE_LIMIT_MS = 60_000;
 const SPEECH_VAD = 0.5;
 
+const spoken = (text: string) =>
+  text
+    .replace(/\[[^\]]*\]/g, "")
+    .replace(/\[[^\]]*$/, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
 type ErrorKind = "mic" | "offline" | "session" | "dropped" | "auth";
 
 const ERRORS: Record<ErrorKind, { title: string; body: string }> = {
@@ -298,7 +305,7 @@ export default function ConversationScreen({ character, onExit }: Props) {
             <div className={`hint hint-${phase}`}>{HINTS[phase]}</div>
           </div>
           <div className="subtitles" aria-live="polite">
-            {subtitle && <p>{subtitle}</p>}
+            {spoken(subtitle) && <p>{spoken(subtitle)}</p>}
           </div>
         </>
       )}
