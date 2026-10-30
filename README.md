@@ -62,7 +62,7 @@ Pushing: the configs are applied through the ElevenLabs MCP connector (the CLI h
 
 | Setting | Value | Why |
 |---|---|---|
-| LLM | `gemini-2.5-flash`, thinking off, max 300 tokens, backup `gemini-2.5-flash-lite` | **Temporary.** Built-in Claude is not available in this workspace; switch to custom-LLM Claude once the Anthropic key secret exists |
+| LLM | `gemini-2.5-flash`, thinking off, max 300 tokens, backup `gemini-2.5-flash-lite` | Fastest option that keeps zero retention (see below). Billed through ElevenLabs credits, no separate key |
 | TTS | `eleven_v4_turbo` | Multilingual, low latency |
 | Turn detection | `turn_v3`, eagerness `patient`, `speculative_turn: true` | Waits through mid-sentence pauses; speculative turn starts the LLM during silence to keep first audio around 1–2 s |
 | `turn_timeout` | `-1` | Never "are you still there?" while the mic is muted between clicks |
@@ -75,11 +75,19 @@ Pushing: the configs are applied through the ElevenLabs MCP connector (the CLI h
 
 Measured in ElevenLabs tests: LLM first sentence ≈ 1.0 s after the user turn ends.
 
-### Switching to Claude (your Anthropic key)
+### Why not Claude
 
-1. Anthropic Console: workspace `orben-booth`, monthly spend limit, API key in that workspace.
-2. ElevenLabs (the workspace the agents live in) → Agents → Settings → Secrets → add the key, name `anthropic_api_key`.
-3. Tell Claude Code the secret exists; it reads the `secret_id` and applies `--custom-llm-secret` to all four agents (custom LLM `https://api.anthropic.com/v1`, model `claude-haiku-5-5`, `temperature: null`).
+Measured 30 Oct 2026, same 4 Kocken tests × 5 runs each:
+
+| Seconds (median / p90 / worst) | Gemini 2.5 Flash | Claude Haiku 5.5 via own Anthropic key |
+|---|---|---|
+| First sentence from the LLM | 0.50 / 0.75 / 0.81 | 1.10 / 2.76 / 7.42 |
+| Whole answer, from end of user turn | 1.00 / 1.15 / 1.30 | 1.95 / 3.00 / 8.44 |
+| Tests passed | 20/20 | 18/20 (2 answers cut off mid-sentence) |
+
+- A custom LLM (own Anthropic key) is not allowed with `zero_retention_mode`, so it would also mean storing transcripts.
+- ElevenLabs' built-in Claude errors in this workspace and silently falls back to the backup model.
+- `build.mjs --custom-llm-secret <id>` is kept in case this changes.
 
 ## How the conversation works
 
@@ -109,11 +117,10 @@ Press and hold the **RKJH** wordmark on the picker for 1.5 s. It has:
 4. Volume: computer volume ~70 %, fine-tune in the staff panel, test with each character. Stand 1–2 m away and check subtitles are readable.
 5. Network: venue wifi, with a phone hotspot ready. If "Ingen internetanslutning" shows, switch to the hotspot and click "Försök igen".
 6. Restart if anything is stuck: click "Börja om". Still stuck: reload the page (`Ctrl+R`). The PIN cookie survives reloads.
-7. Keep an eye on ElevenLabs credits and the Anthropic spend during the evening.
+7. Keep an eye on ElevenLabs credits during the evening.
 
 ## After the event
 
-1. ElevenLabs: archive or delete the four `Orben – …` agents, and delete the `anthropic_api_key` secret.
+1. ElevenLabs: archive or delete the four `Orben – …` agents.
 2. ElevenLabs: delete the restricted API key used by Vercel.
-3. Anthropic: disable or delete the `orben-booth` key.
-4. Vercel: pause or delete the `voice_orb_agent` project.
+3. Vercel: pause or delete the `voice_orb_agent` project.
