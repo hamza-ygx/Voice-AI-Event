@@ -39,7 +39,13 @@
       "voice_id": "4Ct5uMEndw4cJ7q0Jx0l",
       "stability": 0.55,
       "speed": 1.03,
-      "similarity_boost": 0.8
+      "similarity_boost": 0.8,
+      "pronunciation_dictionary_locators": [
+        {
+          "pronunciation_dictionary_id": "sQP5Ok1qiwgX5WUy8MES",
+          "version_id": null
+        }
+      ]
     },
     "turn": {
       "mode": "turn",

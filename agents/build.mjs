@@ -63,6 +63,7 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
         stability: c.stability,
         speed: c.speed,
         similarity_boost: 0.8,
+        pronunciation_dictionary_locators: [{ pronunciation_dictionary_id: "sQP5Ok1qiwgX5WUy8MES", version_id: null }],
       },
       turn: {
         mode: "turn",
