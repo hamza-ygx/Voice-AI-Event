@@ -1,0 +1,185 @@
+:root {
+  --bg: #07080c;
+  --bg-2: #0e1018;
+  --fg: #f2f3f7;
+  --muted: #8a8fa3;
+  --line: rgba(255, 255, 255, 0.08);
+  --danger: #ff6b6b;
+  --font: "Inter", "SF Pro Display", -apple-system, "Segoe UI", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 40%, var(--bg-2) 0%, var(--bg) 70%);
+  color: var(--fg);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  user-select: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pin {
+  gap: 2.5rem;
+}
+
+.pin h1 {
+  margin: 0;
+  font-weight: 300;
+  font-size: 1.5rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.pin-dots {
+  display: flex;
+  gap: 1rem;
+  height: 1rem;
+}
+
+.pin-dots span {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--fg);
+}
+
+.pin-dots.shake {
+  animation: shake 0.4s;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 5rem);
+  gap: 1rem;
+}
+
+.keypad button {
+  height: 5rem;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  font-size: 1.75rem;
+  font-weight: 300;
+  transition: background 0.15s;
+}
+
+.keypad button:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.keypad button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.pin-msg {
+  min-height: 1.5rem;
+  color: var(--danger);
+  font-size: 1rem;
+}
+
+.picker {
+  gap: 4rem;
+}
+
+.picker-title {
+  margin: 0;
+  font-weight: 300;
+  font-size: 2.25rem;
+  letter-spacing: 0.02em;
+}
+
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 15rem));
+  gap: 3rem;
+}
+
+.pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.pick-orb {
+  width: 9rem;
+  height: 9rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--c) 35%, white) 0%, var(--c) 40%, color-mix(in srgb, var(--c) 40%, black) 100%);
+  box-shadow: 0 0 60px 10px var(--g);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.pick:hover .pick-orb {
+  transform: scale(1.06);
+  box-shadow: 0 0 90px 20px var(--g);
+}
+
+.pick-name {
+  font-size: 1.6rem;
+  font-weight: 500;
+}
+
+.pick-example {
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.wordmark {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 2rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.35em;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.status {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 2rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+@keyframes shake {
+  25% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+  75% { transform: translateX(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
