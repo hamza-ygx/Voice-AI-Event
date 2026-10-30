@@ -48,6 +48,7 @@ Changing the PIN does not log out the booth. Rotate `SESSION_SECRET` to force ev
 - `agents/prompts/<id>.md`: character prompt; `_shared.md`: rules shared by all four.
 - `agents/build.mjs`: generates `agents/agent_configs/<id>.json` from prompts + settings.
 - `agents/agents.json`: agent name → agent ID. `/api/session` reads IDs from here.
+- `agents/pronunciation/orben.pls`: pronunciation dictionary (emergency numbers digit by digit, VVS, AI, French food and wine words). Uploaded once in the ElevenLabs dashboard, attached to all four agents.
 - `agents/tests.json`: the ElevenLabs LLM tests and which run per character. Re-run them after every prompt change.
 
 ```bash
