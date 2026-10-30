@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import agentIds from "../../../../agents/ids.json";
+import registry from "../../../../agents/agents.json";
 import { isValidSession, SESSION_COOKIE } from "@/lib/auth";
 import { isCharacterId } from "@/lib/characters";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "bad_request" }, { status: 400, headers: noStore });
   }
 
-  const agentId = (agentIds as Record<string, string>)[character];
+  const agentId = registry.agents.find((a) => a.name === character)?.id;
   const apiKey = process.env.ELEVENLABS_API_KEY;
   if (!agentId || !apiKey) {
     return NextResponse.json({ error: "not_configured" }, { status: 503, headers: noStore });

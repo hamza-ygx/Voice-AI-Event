@@ -30,6 +30,17 @@ button {
   background: none;
   border: 0;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.35);
+  outline-offset: 6px;
+  border-radius: 1rem;
 }
 
 .screen {
@@ -160,12 +171,129 @@ button {
   color: rgba(255, 255, 255, 0.25);
 }
 
-.status {
-  position: fixed;
-  bottom: 1.5rem;
-  left: 2rem;
-  font-size: 0.85rem;
+.conversation {
+  justify-content: flex-start;
+  background: radial-gradient(ellipse at 50% 38%, color-mix(in srgb, var(--c) 10%, transparent) 0%, transparent 55%);
+}
+
+.topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+}
+
+.who {
+  font-size: 1.1rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
   color: var(--muted);
+}
+
+.chip {
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.95rem;
+  transition: color 0.2s, background 0.2s;
+}
+
+.chip:hover {
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.chip.primary {
+  color: var(--fg);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1vh;
+}
+
+.orb {
+  width: min(52vh, 46vw);
+  max-width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.orb canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hint {
+  font-size: 1.35rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  min-height: 2rem;
+  transition: color 0.3s;
+}
+
+.hint-idle {
+  color: var(--fg);
+}
+
+.subtitles {
+  flex: 1;
+  width: min(1100px, 88vw);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 1.5rem;
+}
+
+.subtitles p {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+  line-height: 1.35;
+  font-weight: 400;
+  color: var(--fg);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+  animation: rise 0.4s ease-out;
+}
+
+.error-card {
+  margin-top: 18vh;
+  max-width: 40rem;
+  padding: 2.5rem 3rem;
+  border-radius: 1.5rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  text-align: center;
+}
+
+.error-card h2 {
+  margin: 0 0 1rem;
+  font-weight: 500;
+  font-size: 1.8rem;
+}
+
+.error-card p {
+  margin: 0 0 2rem;
+  color: var(--muted);
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.error-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
 }
 
 @keyframes shake {
