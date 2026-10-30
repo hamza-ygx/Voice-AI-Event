@@ -51,8 +51,8 @@ Changing the PIN does not log out the booth. Rotate `SESSION_SECRET` to force ev
 - `agents/tests.json`: the ElevenLabs LLM tests and which run per character. Re-run them after every prompt change.
 
 ```bash
-node agents/build.mjs                                   # current: temporary Gemini + placeholder voices
-node agents/build.mjs --library-voices                  # Swedish library voices
+node agents/build.mjs                                   # current: Gemini + Swedish voices (Filip, Evelina, Peter, Elin)
+node agents/build.mjs --placeholder-voices              # English premade voices (fallback)
 node agents/build.mjs --custom-llm-secret <secret_id>   # Claude Haiku 5.5 via your Anthropic key
 ```
 

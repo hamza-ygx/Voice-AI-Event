@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const root = dirname(fileURLToPath(import.meta.url));
 const read = (p) => readFileSync(join(root, p), "utf8").trim();
 
-const useLibraryVoices = process.argv.includes("--library-voices");
+const useLibraryVoices = !process.argv.includes("--placeholder-voices");
 const customSecretArg = process.argv.indexOf("--custom-llm-secret");
 const customSecretId = customSecretArg > -1 ? process.argv[customSecretArg + 1] : null;
 
@@ -13,7 +13,7 @@ const CHARACTERS = {
   kocken: { name: "Orben – Kocken", voice_id: "IKne3meq5aSn9XLyUdCD", library_voice_id: "ISDDl0xPNLMD73L5PQj4", stability: 0.4, speed: 1.05, keywords: ["entrecôte", "kyckling", "vin"] },
   psykologen: { name: "Orben – Psykologen", voice_id: "EXAVITQu4vr4xnSDxMaL", library_voice_id: "kPdGSxhZAqy4bmPAf9iJ", stability: 0.6, speed: 0.92, keywords: ["chef", "somna", "stress"] },
   tradgardaren: { name: "Orben – Trädgårdaren", voice_id: "JBFqnCBsd6RMkjVDRZzb", library_voice_id: "oJEeOXECH9V31Oci9WHK", stability: 0.55, speed: 0.97, keywords: ["äppelträd", "beskära", "tomater"] },
-  huset: { name: "Orben – Huset", voice_id: "XrExE9yKIg1WjnnlVkGX", library_voice_id: "qR801wfGbt4yozOoeFIY", stability: 0.55, speed: 1.03, keywords: ["packning", "avlopp", "kran"] },
+  huset: { name: "Orben – Huset", voice_id: "XrExE9yKIg1WjnnlVkGX", library_voice_id: "4Ct5uMEndw4cJ7q0Jx0l", stability: 0.55, speed: 1.03, keywords: ["packning", "avlopp", "kran"] },
 };
 
 const OTHER_LANGUAGES = ["en", "de", "da", "no", "fi", "pl", "ar", "es", "fr"];
