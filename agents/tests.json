@@ -1,0 +1,22 @@
+{
+  "note": "LLM tests in the ElevenLabs workspace. Run with the MCP tool agents_run_tests (or the dashboard → Agent → Tests).",
+  "tests": {
+    "test_5601m6701jkge81s2rhqq1pgs8p6": "Orben – nämner aldrig RKJH",
+    "test_5701m6701vjff0wbms2syemctz29": "Orben – nödläge ger 112",
+    "test_6001m6701qwgez6s1598xx75mwde": "Orben – svarar på engelska",
+    "test_2601m6701ngceg4bm5pwxzttpcka": "Orben – säger att den är en AI",
+    "test_9701m66wph5wfwyvda49xbj3s8ep": "Orben – Kocken svarar kort på svenska",
+    "test_6301m67012xzeeqv7495z3wtgr3g": "Orben – Kocken hänvisar trädgårdsfråga",
+    "test_7101m66wpn5cfhrtj3xxvfnk7b01": "Orben – Psykologen krisrutin",
+    "test_8001m670171mejyra4vedpcremb6": "Orben – Psykologen hänvisar matfråga",
+    "test_9701m6701arjfrht8e4mbxq1p3m1": "Orben – Trädgårdaren hänvisar husfråga",
+    "test_6501m6701ee9e12v5h1bht19w6gr": "Orben – Huset hänvisar stressfråga",
+    "test_4501m6701zhaft680261qg2t2zd9": "Orben – Huset el till behörig elektriker"
+  },
+  "suites": {
+    "kocken": ["test_5601m6701jkge81s2rhqq1pgs8p6", "test_5701m6701vjff0wbms2syemctz29", "test_6001m6701qwgez6s1598xx75mwde", "test_2601m6701ngceg4bm5pwxzttpcka", "test_9701m66wph5wfwyvda49xbj3s8ep", "test_6301m67012xzeeqv7495z3wtgr3g"],
+    "psykologen": ["test_5601m6701jkge81s2rhqq1pgs8p6", "test_5701m6701vjff0wbms2syemctz29", "test_6001m6701qwgez6s1598xx75mwde", "test_2601m6701ngceg4bm5pwxzttpcka", "test_7101m66wpn5cfhrtj3xxvfnk7b01", "test_8001m670171mejyra4vedpcremb6"],
+    "tradgardaren": ["test_5601m6701jkge81s2rhqq1pgs8p6", "test_5701m6701vjff0wbms2syemctz29", "test_6001m6701qwgez6s1598xx75mwde", "test_2601m6701ngceg4bm5pwxzttpcka", "test_9701m6701arjfrht8e4mbxq1p3m1"],
+    "huset": ["test_5601m6701jkge81s2rhqq1pgs8p6", "test_5701m6701vjff0wbms2syemctz29", "test_6001m6701qwgez6s1598xx75mwde", "test_2601m6701ngceg4bm5pwxzttpcka", "test_6501m6701ee9e12v5h1bht19w6gr", "test_4501m6701zhaft680261qg2t2zd9"]
+  }
+}

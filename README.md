@@ -15,14 +15,18 @@ Voice booth app for the RKJH client event (15 November 2026, 15:00–23:00). A v
 - **ElevenLabs Agents** for speech-to-text, turn-taking and text-to-speech, over WebRTC via `@elevenlabs/react` (`Conversation` from `@elevenlabs/client`).
 - **Agents are private** (`enable_auth: true`). The browser never sees the ElevenLabs key: `POST /api/session` checks the PIN cookie and mints a short-lived conversation token server-side.
 - **PIN lock**: `POST /api/pin` compares against `APP_PIN` in constant time and sets an HMAC-signed, `httpOnly`, `Secure`, `SameSite=Strict` cookie valid for 3 days.
-- **Rate limits** (per IP, per server instance): PIN 5 tries / 10 min, session 20 / min.
+- **Rate limits** (per IP, per server instance): PIN 5 tries / 10 min, session 20 / min, health 10 / min.
 - No analytics, no cookies besides the PIN cookie, no transcript or audio logging on Vercel.
 
 ```
 src/app/api/pin        PIN check, sets cookie
 src/app/api/session    cookie check, mints ElevenLabs conversation token
-src/components/Booth   character picker
-src/components/ConversationScreen  session, click-to-talk, interrupt, subtitles, idle reset, errors
+src/app/api/health     cookie check, test-mints a token (staff panel status)
+src/components/Booth   character picker, attract mode, staff-panel long-press
+src/components/ConversationScreen  session, click-to-talk, interrupt, cues, auto-retry, idle reset, errors
+src/components/Subtitles  paced subtitles, "Du sa", QR take-home
+src/components/StaffPanel mic picker + level meter, voice volume, connection check
+src/components/Kiosk   hides cursor, blocks context menu/drag, fullscreen on first tap
 src/components/Orb     canvas orb: idle / listening / thinking / speaking
 agents/                agents as code (see below)
 ```
@@ -44,6 +48,7 @@ Changing the PIN does not log out the booth. Rotate `SESSION_SECRET` to force ev
 - `agents/prompts/<id>.md`: character prompt; `_shared.md`: rules shared by all four.
 - `agents/build.mjs`: generates `agents/agent_configs/<id>.json` from prompts + settings.
 - `agents/agents.json`: agent name → agent ID. `/api/session` reads IDs from here.
+- `agents/tests.json`: the ElevenLabs LLM tests and which run per character. Re-run them after every prompt change.
 
 ```bash
 node agents/build.mjs                                   # current: temporary Gemini + placeholder voices
@@ -83,13 +88,25 @@ Measured in ElevenLabs tests: LLM first sentence ≈ 1.0 s after the user turn e
 - Agent answers → mic mutes, subtitles stream the answer.
 - Click while the agent talks → its audio is muted instantly and the mic opens. The server stops generating when the visitor starts speaking (ElevenLabs has no client-side "stop generation" call; if the visitor stays silent, the rest of the answer is generated but not heard).
 - "Byt person", "Börja om", 60 s without speech from either side, or the 10 min cap → session ends, everything is cleared, back to the picker.
+- Short rising/falling tones mark mic open/closed. The mic opens 180 ms after the tone so the tone isn't transcribed.
+- Subtitles reveal at the character's speaking pace, show "Du sa: …" (what speech recognition heard), and after the answer a QR code holds the tip as plain text (nothing leaves the device; the phone just reads the text).
+- A dropped or failed connection retries once automatically before showing the error screen.
+- The picker rotates a highlighted character and an example question every 4.5 s to draw people in.
+
+## Staff panel
+
+Press and hold the **RKJH** wordmark on the picker for 1.5 s. It has:
+- microphone picker with a live level meter (saved in this browser),
+- voice volume slider and a speaker test tone,
+- internet and voice-service status (`/api/health` mints a test token and shows the round-trip time),
+- reload button.
 
 ## Booth-day checklist (15 Nov)
 
 1. Laptop on power, sleep and screen saver off, notifications off (Focus / Do Not Disturb).
-2. Chrome, open the production URL, enter the PIN, press `F11` for fullscreen. For true kiosk mode start Chrome with `--kiosk <url>`.
-3. External mic: plug in before opening Chrome. Chrome → site settings → Microphone → choose the external mic. Allow microphone.
-4. Volume: speakers ~70 %, test with each character. Stand 1–2 m away and check subtitles are readable.
+2. Chrome, open the production URL, enter the PIN. The first tap goes fullscreen and the cursor hides after 3 s. For true kiosk mode start Chrome with `--kiosk <url>`.
+3. External mic: a directional or headset mic beats the laptop mic in a noisy room. Plug in before opening Chrome, allow the mic, then pick it in the staff panel and check the meter.
+4. Volume: computer volume ~70 %, fine-tune in the staff panel, test with each character. Stand 1–2 m away and check subtitles are readable.
 5. Network: venue wifi, with a phone hotspot ready. If "Ingen internetanslutning" shows, switch to the hotspot and click "Försök igen".
 6. Restart if anything is stuck: click "Börja om". Still stuck: reload the page (`Ctrl+R`). The PIN cookie survives reloads.
 7. Keep an eye on ElevenLabs credits and the Anthropic spend during the evening.

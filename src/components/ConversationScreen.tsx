@@ -3,10 +3,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Conversation, type VoiceConversation } from "@elevenlabs/react";
 import Orb, { type OrbAudio, type OrbPhase } from "./Orb";
+import Subtitles, { type RevealMode } from "./Subtitles";
+import { cueListenStart, cueListenStop } from "@/lib/sounds";
+import { getMicId, getVolume } from "@/lib/settings";
 import type { Character } from "@/lib/characters";
 
 const IDLE_LIMIT_MS = 60_000;
 const SPEECH_VAD = 0.5;
+const MIC_OPEN_DELAY_MS = 180;
+const AUTO_RETRIES = 1;
 
 const spoken = (text: string) =>
   text
@@ -56,6 +61,7 @@ type Props = {
 export default function ConversationScreen({ character, onExit }: Props) {
   const [phase, setPhaseState] = useState<OrbPhase>("connecting");
   const [subtitle, setSubtitle] = useState("");
+  const [userSaid, setUserSaid] = useState("");
   const [error, setError] = useState<ErrorKind | null>(null);
   const [attempt, setAttempt] = useState(0);
 
@@ -68,6 +74,8 @@ export default function ConversationScreen({ character, onExit }: Props) {
   const lastActivity = useRef(Date.now());
   const ending = useRef(false);
   const audio = useRef<OrbAudio | null>(null);
+  const retries = useRef(0);
+  const micTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const setPhase = useCallback((p: OrbPhase) => {
     phaseRef.current = p;
@@ -89,14 +97,26 @@ export default function ConversationScreen({ character, onExit }: Props) {
   const fail = useCallback(
     (kind: ErrorKind) => {
       closeSession();
+      if ((kind === "session" || kind === "dropped") && retries.current < AUTO_RETRIES) {
+        retries.current += 1;
+        setTimeout(() => setAttempt((n) => n + 1), 800);
+        return;
+      }
       setError(kind);
     },
     [closeSession],
   );
 
   const setMic = (open: boolean) => {
+    if (micTimer.current) clearTimeout(micTimer.current);
     micOpen.current = open;
-    conv.current?.setMicMuted(!open);
+    if (!open) {
+      conv.current?.setMicMuted(true);
+      return;
+    }
+    micTimer.current = setTimeout(() => {
+      if (micOpen.current) conv.current?.setMicMuted(false);
+    }, MIC_OPEN_DELAY_MS);
   };
 
   useEffect(() => {
@@ -108,6 +128,7 @@ export default function ConversationScreen({ character, onExit }: Props) {
     ignoreParts.current = false;
     setError(null);
     setSubtitle("");
+    setUserSaid("");
     setPhase("connecting");
     touch();
 
@@ -142,6 +163,7 @@ export default function ConversationScreen({ character, onExit }: Props) {
           connectionType: "webrtc",
           textOnly: false,
           useWakeLock: true,
+          inputDeviceId: getMicId(),
           onConnect: () => touch(),
           onDisconnect: (details) => {
             if (ending.current || cancelled) return;
@@ -158,7 +180,7 @@ export default function ConversationScreen({ character, onExit }: Props) {
             } else {
               if (interrupting.current) {
                 interrupting.current = false;
-                conv.current?.setVolume({ volume: 1 });
+                conv.current?.setVolume({ volume: getVolume() });
               }
               setPhase(micOpen.current ? "listening" : "idle");
             }
@@ -173,10 +195,12 @@ export default function ConversationScreen({ character, onExit }: Props) {
             touch();
             if (source === "user") {
               ignoreParts.current = false;
+              setUserSaid(message.trim());
               if (interrupting.current) {
                 interrupting.current = false;
-                conv.current?.setVolume({ volume: 1 });
+                conv.current?.setVolume({ volume: getVolume() });
               }
+              if (phaseRef.current === "listening") cueListenStop();
               if (phaseRef.current !== "speaking") setPhase("thinking");
             } else if (!ignoreParts.current) {
               setSubtitle(message);
@@ -200,6 +224,8 @@ export default function ConversationScreen({ character, onExit }: Props) {
         const voice = c as VoiceConversation;
         conv.current = voice;
         voice.setMicMuted(true);
+        voice.setVolume({ volume: getVolume() });
+        retries.current = 0;
         audio.current = {
           input: () => voice.getInputVolume(),
           output: () => voice.getOutputVolume(),
@@ -216,6 +242,7 @@ export default function ConversationScreen({ character, onExit }: Props) {
 
     return () => {
       cancelled = true;
+      if (micTimer.current) clearTimeout(micTimer.current);
       closeSession();
     };
   }, [character.id, attempt, closeSession, fail, onExit, setPhase]);
@@ -246,21 +273,28 @@ export default function ConversationScreen({ character, onExit }: Props) {
     const p = phaseRef.current;
     if (p === "idle") {
       heardSpeech.current = false;
+      cueListenStart();
       setMic(true);
       setPhase("listening");
     } else if (p === "listening") {
       setMic(false);
+      cueListenStop();
       setPhase(heardSpeech.current ? "thinking" : "idle");
     } else if (p === "speaking" || p === "thinking") {
       interrupting.current = true;
       ignoreParts.current = true;
       c.setVolume({ volume: 0 });
       setSubtitle("");
+      setUserSaid("");
       heardSpeech.current = false;
+      cueListenStart();
       setMic(true);
       setPhase("listening");
     }
   };
+
+  const answer = spoken(subtitle);
+  const reveal: RevealMode = phase === "speaking" ? "pace" : phase === "thinking" || phase === "connecting" ? "hold" : "all";
 
   const leave = () => {
     closeSession();
@@ -289,7 +323,13 @@ export default function ConversationScreen({ character, onExit }: Props) {
                 Ladda om
               </button>
             ) : (
-              <button className="chip primary" onClick={() => setAttempt((n) => n + 1)}>
+              <button
+                className="chip primary"
+                onClick={() => {
+                  retries.current = 0;
+                  setAttempt((n) => n + 1);
+                }}
+              >
                 Försök igen
               </button>
             )}
@@ -304,9 +344,13 @@ export default function ConversationScreen({ character, onExit }: Props) {
             <Orb color={character.color} phase={phase} audio={audio} onClick={onOrbClick} label={HINTS[phase]} />
             <div className={`hint hint-${phase}`}>{HINTS[phase]}</div>
           </div>
-          <div className="subtitles" aria-live="polite">
-            {spoken(subtitle) && <p>{spoken(subtitle)}</p>}
-          </div>
+          <Subtitles
+            text={answer}
+            userSaid={userSaid}
+            mode={reveal}
+            rate={character.speechRate}
+            takeHome={phase === "idle" && answer ? `${character.name}s tips:\n${answer}` : null}
+          />
         </>
       )}
     </main>
