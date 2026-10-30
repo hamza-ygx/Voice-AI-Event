@@ -35,17 +35,20 @@ const mix = ([r, g, b]: RGB, [r2, g2, b2]: RGB, k: number): RGB => [
   Math.round(b + (b2 - b) * k),
 ];
 
-function sprite(color: RGB, core: RGB) {
+function dotSprite(fill: RGB, halo: RGB) {
   const s = 64;
   const c = document.createElement("canvas");
   c.width = c.height = s;
   const g = c.getContext("2d")!;
-  const grad = g.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
-  grad.addColorStop(0, rgba(core, 1));
-  grad.addColorStop(0.25, rgba(color, 0.9));
-  grad.addColorStop(1, rgba(color, 0));
-  g.fillStyle = grad;
+  const h = g.createRadialGradient(s / 2, s / 2, s * 0.16, s / 2, s / 2, s / 2);
+  h.addColorStop(0, rgba(halo, 0.35));
+  h.addColorStop(1, rgba(halo, 0));
+  g.fillStyle = h;
   g.fillRect(0, 0, s, s);
+  g.beginPath();
+  g.arc(s / 2, s / 2, s * 0.2, 0, Math.PI * 2);
+  g.fillStyle = rgba(fill, 1);
+  g.fill();
   return c;
 }
 
@@ -54,7 +57,7 @@ type Spark = { x: number; y: number; z: number; r: number; v: number; life: numb
 const GOLDEN = Math.PI * (3 - Math.sqrt(5));
 const TILT = 0.42;
 
-export default function Orb({ color, phase, audio, onClick, label, radius = 0.27, density = 1, className }: Props) {
+export default function Orb({ color, phase, audio, onClick, label, radius = 0.34, density = 1, className }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
@@ -65,20 +68,21 @@ export default function Orb({ color, phase, audio, onClick, label, radius = 0.27
     if (!canvas || !ctx) return;
 
     const base = rgb(color);
-    const light = mix(base, [255, 255, 255], 0.5);
-    const white = mix(base, [255, 255, 255], 0.9);
-    const dot = sprite(light, white);
-    const dim = sprite(base, light);
+    const light = mix(base, [255, 255, 255], 0.45);
+    const white = mix(base, [255, 255, 255], 0.85);
+    const front = dotSprite(white, light);
+    const mid = dotSprite(light, base);
+    const back = dotSprite(base, base);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     let size = 0;
-    let px: Float32Array = new Float32Array(0);
-    let py: Float32Array = new Float32Array(0);
-    let pz: Float32Array = new Float32Array(0);
-    let seed: Float32Array = new Float32Array(0);
+    let px = new Float32Array(0);
+    let py = new Float32Array(0);
+    let pz = new Float32Array(0);
+    let seed = new Float32Array(0);
 
     const build = () => {
-      const n = Math.round(Math.min(1700, Math.max(260, size * 3.2)) * density);
+      const n = Math.round(Math.min(900, Math.max(220, size * 1.6)) * density);
       px = new Float32Array(n);
       py = new Float32Array(n);
       pz = new Float32Array(n);
@@ -100,11 +104,9 @@ export default function Orb({ color, phase, audio, onClick, label, radius = 0.27
       canvas.width = next * dpr;
       canvas.height = next * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      if (Math.abs(next - size) > 40 || px.length === 0) {
-        size = next;
-        build();
-      }
+      const rebuild = Math.abs(next - size) > 40 || px.length === 0;
       size = next;
+      if (rebuild) build();
     };
     resize();
     const ro = new ResizeObserver(resize);
@@ -118,6 +120,7 @@ export default function Orb({ color, phase, audio, onClick, label, radius = 0.27
     let dimmed = 1;
     let spin = 0;
     let vortex = 0;
+    let flow = 0;
     let last = performance.now();
     let raf = 0;
     const start = last;
@@ -132,48 +135,42 @@ export default function Orb({ color, phase, audio, onClick, label, radius = 0.27
       const a = audio?.current;
 
       const target = p === "listening" ? (a?.input() ?? 0) : p === "speaking" ? (a?.output() ?? 0) : 0;
-      level += (Math.min(1, target * 1.8) - level) * 0.22;
+      level += (Math.min(1, target * 2) - level) * 0.25;
       swirl += ((p === "thinking" ? 1 : 0) - swirl) * 0.05;
       wave += ((p === "speaking" ? 1 : 0) - wave) * 0.08;
       listen += ((p === "listening" ? 1 : 0) - listen) * 0.1;
       dimmed += ((p === "connecting" ? 0.45 : 1) - dimmed) * 0.05;
 
-      spin += dt * (0.22 + swirl * 1.4 + level * 0.6) * amp;
+      const active = Math.max(listen, wave);
+      const motion = active * (0.35 + level * 0.9) * amp;
+      spin += dt * (0.2 + swirl * 1.4 + active * 0.25 + level * 0.9) * amp;
       vortex += dt * swirl * 2.2 * amp;
+      flow += dt * (1 + level * 3) * amp;
 
       const cx = size / 2;
       const cy = size / 2;
       const R = size * radius;
-      const breath = 1 + Math.sin(t * 1.2) * 0.03 * amp * (1 - listen) * (1 - wave);
+      const breath = 1 + Math.sin(t * 1.2) * 0.03 * amp * (1 - active);
       const bins = wave > 0.01 ? (a?.outputBins() ?? null) : null;
       const binSpan = bins ? Math.max(1, Math.floor(bins.length * 0.45)) : 0;
 
       ctx.clearRect(0, 0, size, size);
       ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = 1;
 
-      const glowR = Math.min(size * 0.5, R * (1.6 + level * 0.6));
+      const glowR = Math.min(size * 0.5, R * (1.5 + level * 0.5 + listen * 0.15));
       const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowR);
-      glow.addColorStop(0, rgba(base, (0.32 + level * 0.3 + swirl * 0.1) * dimmed));
-      glow.addColorStop(0.45, rgba(base, (0.12 + level * 0.12) * dimmed));
+      glow.addColorStop(0, rgba(base, (0.16 + level * 0.22 + swirl * 0.06) * dimmed));
       glow.addColorStop(1, rgba(base, 0));
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, size, size);
-
-      ctx.globalCompositeOperation = "lighter";
-
-      const coreR = R * (0.75 + level * 0.25) * (1 - swirl * 0.25);
-      const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR);
-      core.addColorStop(0, rgba(light, (0.22 + level * 0.25) * dimmed));
-      core.addColorStop(1, rgba(base, 0));
-      ctx.fillStyle = core;
-      ctx.fillRect(cx - coreR, cy - coreR, coreR * 2, coreR * 2);
 
       const sy = Math.sin(spin);
       const cyR = Math.cos(spin);
       const st = Math.sin(TILT + Math.sin(t * 0.3) * 0.08 * amp);
       const ct = Math.cos(TILT + Math.sin(t * 0.3) * 0.08 * amp);
       const n = px.length;
-      const baseSize = Math.max(1.6, size / 170);
+      const dotR = Math.max(1.5, size / 210);
 
       for (let i = 0; i < n; i++) {
         let x = px[i];
@@ -181,12 +178,19 @@ export default function Orb({ color, phase, audio, onClick, label, radius = 0.27
         let z = pz[i];
         const s = seed[i];
 
-        let d = breath + Math.sin(s * 3 + t * 1.4) * 0.025 * amp;
-        if (listen > 0.01) d += listen * level * 0.42 * amp * (0.55 + 0.45 * Math.sin(s * 5 + t * 7));
+        let d = breath + Math.sin(s * 3 + t * 1.4) * 0.02 * amp;
+        d += listen * amp * (0.14 + level * 0.45 * (0.7 + 0.3 * Math.sin(s * 5 + t * 6)));
         if (bins) {
           const bin = bins[Math.min(bins.length - 1, Math.floor(Math.abs(y) * binSpan))] / 255;
-          d += wave * amp * (bin * 0.38 + 0.035 * Math.sin(Math.atan2(z, x) * 6 + t * 3.4));
+          d += wave * amp * (0.06 + bin * 0.4 + 0.04 * Math.sin(Math.atan2(z, x) * 6 + t * 3.4));
         }
+
+        if (motion > 0.001) {
+          x += Math.sin(s * 7.1 + flow * 2.3) * 0.075 * motion;
+          y += Math.cos(s * 5.3 + flow * 1.9) * 0.075 * motion;
+          z += Math.sin(s * 3.7 + flow * 2.7) * 0.075 * motion;
+        }
+
         if (swirl > 0.01) {
           const ang = vortex * (1.4 - Math.abs(y));
           const c = Math.cos(ang);
@@ -208,25 +212,22 @@ export default function Orb({ color, phase, audio, onClick, label, radius = 0.27
         const rz2 = y * st + rz * ct;
 
         const persp = 1.6 / (2.6 - rz2);
-        const sx = cx + rx * R * persp;
-        const syp = cy + ry * R * persp;
-        const depth = (rz2 + 1.2) / 2.4;
-        const twinkle = 0.75 + 0.25 * Math.sin(s * 11 + t * 2.6);
-        const alpha = Math.max(0, Math.min(1, (0.12 + depth * 0.88) * twinkle * dimmed));
-        const sz = baseSize * (0.55 + depth * 0.9) * (1 + level * 0.35);
+        const depth = Math.max(0, Math.min(1, (rz2 + 1.2) / 2.4));
+        const sz = dotR * (0.55 + depth * 0.95) * persp * (1 + level * 0.25);
+        const half = sz * 2.5;
 
-        ctx.globalAlpha = alpha;
-        ctx.drawImage(depth > 0.55 ? dot : dim, sx - sz, syp - sz, sz * 2, sz * 2);
+        ctx.globalAlpha = (0.18 + depth * 0.82) * dimmed;
+        ctx.drawImage(depth > 0.62 ? front : depth > 0.35 ? mid : back, cx + rx * R * persp - half, cy + ry * R * persp - half, half * 2, half * 2);
       }
 
       if (!calm) {
         const emit = (listen + wave) * level;
-        const count = emit > 0.08 ? Math.floor(emit * 4 + Math.random()) : 0;
-        for (let k = 0; k < count && sparks.length < 140; k++) {
+        const count = emit > 0.1 ? Math.floor(emit * 3 + Math.random()) : 0;
+        for (let k = 0; k < count && sparks.length < 120; k++) {
           const u = Math.random() * 2 - 1;
           const th = Math.random() * Math.PI * 2;
           const r = Math.sqrt(1 - u * u);
-          sparks.push({ x: Math.cos(th) * r, y: u, z: Math.sin(th) * r, r: 1.05, v: 0.35 + Math.random() * 0.6 + level * 0.6, life: 1 });
+          sparks.push({ x: Math.cos(th) * r, y: u, z: Math.sin(th) * r, r: 1.1, v: 0.35 + Math.random() * 0.5 + level * 0.6, life: 1 });
         }
       }
       for (let k = sparks.length - 1; k >= 0; k--) {
@@ -245,17 +246,17 @@ export default function Orb({ color, phase, audio, onClick, label, radius = 0.27
         const ry = y * ct - rz * st;
         const rz2 = y * st + rz * ct;
         const persp = 1.6 / (2.6 - rz2);
-        const sz = baseSize * 1.1 * sp.life;
-        ctx.globalAlpha = sp.life * 0.8;
-        ctx.drawImage(dot, cx + rx * R * persp - sz, cy + ry * R * persp - sz, sz * 2, sz * 2);
+        const half = dotR * 2.2 * sp.life;
+        ctx.globalAlpha = sp.life * 0.9;
+        ctx.drawImage(front, cx + rx * R * persp - half, cy + ry * R * persp - half, half * 2, half * 2);
       }
 
       if (listen > 0.01 && !calm) {
         for (let i = 0; i < 2; i++) {
           const k = (t * 0.55 + i * 0.5) % 1;
-          ctx.globalAlpha = (1 - k) * listen * (0.12 + level * 0.5);
+          ctx.globalAlpha = (1 - k) * listen * (0.15 + level * 0.5);
           ctx.beginPath();
-          ctx.arc(cx, cy, R * (1.05 + k * 0.5), 0, Math.PI * 2);
+          ctx.arc(cx, cy, R * (1.2 + k * 0.45), 0, Math.PI * 2);
           ctx.strokeStyle = rgba(light, 1);
           ctx.lineWidth = 1.5;
           ctx.stroke();

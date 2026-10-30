@@ -55,7 +55,7 @@ export default function Booth() {
                 onClick={() => setSelected(c.id)}
                 style={{ "--c": c.color, "--g": c.glow } as React.CSSProperties}
               >
-                <Orb color={c.color} phase="idle" radius={0.34} density={0.7} className="pick-orb" />
+                <Orb color={c.color} phase="idle" radius={0.34} density={1} className="pick-orb" />
                 <div className="pick-name">{c.name}</div>
                 <div className="pick-example">”{c.example}”</div>
               </button>
