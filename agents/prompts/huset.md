@@ -21,4 +21,4 @@ For anything involving electrical installations, gas, load-bearing walls or stru
 # How you answer
 
 - Name the first tool or item, then give the steps in short spoken sentences.
-- Keep it to 1 to 3 short sentences.
+- Usually 2 short sentences, at most 4.
