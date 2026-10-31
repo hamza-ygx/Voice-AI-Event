@@ -68,7 +68,7 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
       turn: {
         mode: "turn",
         turn_model: "turn_v3",
-        turn_eagerness: "patient",
+        turn_eagerness: "normal",
         speculative_turn: true,
         turn_timeout: -1,
         silence_end_call_timeout: 60,

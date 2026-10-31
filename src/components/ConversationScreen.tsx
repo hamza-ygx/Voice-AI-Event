@@ -12,6 +12,10 @@ const IDLE_LIMIT_MS = 60_000;
 const SPEECH_VAD = 0.5;
 const MIC_OPEN_DELAY_MS = 180;
 const AUTO_RETRIES = 1;
+const END_SILENCE_MS = 1200;
+const NO_SPEECH_MS = 8000;
+const MAX_LISTEN_MS = 15_000;
+const MAX_THINK_MS = 10_000;
 
 const spoken = (text: string) =>
   text
@@ -76,8 +80,11 @@ export default function ConversationScreen({ character, onExit }: Props) {
   const audio = useRef<OrbAudio | null>(null);
   const retries = useRef(0);
   const micTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const phaseSince = useRef(Date.now());
+  const lastSpeech = useRef(0);
 
   const setPhase = useCallback((p: OrbPhase) => {
+    if (phaseRef.current !== p) phaseSince.current = Date.now();
     phaseRef.current = p;
     setPhaseState(p);
   }, []);
@@ -188,6 +195,7 @@ export default function ConversationScreen({ character, onExit }: Props) {
           onVadScore: ({ vadScore }) => {
             if (micOpen.current && vadScore > SPEECH_VAD) {
               heardSpeech.current = true;
+              lastSpeech.current = Date.now();
               touch();
             }
           },
@@ -265,6 +273,27 @@ export default function ConversationScreen({ character, onExit }: Props) {
       window.removeEventListener("offline", offline);
     };
   }, [error, closeSession, fail, onExit]);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      const p = phaseRef.current;
+      const now = Date.now();
+      const elapsed = now - phaseSince.current;
+      if (p === "listening" && micOpen.current) {
+        const done = heardSpeech.current
+          ? now - lastSpeech.current > END_SILENCE_MS || elapsed > MAX_LISTEN_MS
+          : elapsed > NO_SPEECH_MS;
+        if (done) {
+          setMic(false);
+          cueListenStop();
+          setPhase(heardSpeech.current ? "thinking" : "idle");
+        }
+      } else if (p === "thinking" && elapsed > MAX_THINK_MS) {
+        setPhase("idle");
+      }
+    }, 150);
+    return () => clearInterval(id);
+  }, [setPhase]);
 
   const onOrbClick = () => {
     const c = conv.current;
