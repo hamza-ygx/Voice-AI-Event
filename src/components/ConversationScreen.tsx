@@ -67,6 +67,7 @@ export type Handoff = { from: string; greeting: string; topic: string; language:
 const HANDOFF_LANGUAGES = ["sv", "en", "de", "da", "no", "fi", "pl", "ar", "es", "fr"];
 const SWITCH_MIN_MS = 300;
 const SWITCH_MAX_MS = 2500;
+const SWITCH_LATE_LINE_MAX_MS = 5000;
 const SWITCH_QUIET_TICKS = 5;
 const SWITCH_QUIET_LEVEL = 0.01;
 
@@ -101,6 +102,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
   const pendingSwitch = useRef<{ to: CharacterId; handoff: Handoff } | null>(null);
   const switchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoListen = useRef(false);
+  const spokeThisTurn = useRef(false);
   const handoffRef = useRef(handoff);
   const onSwitchRef = useRef(onSwitch);
   onSwitchRef.current = onSwitch;
@@ -223,13 +225,17 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
               ignoreParts.current = true;
               setMic(false);
               const started = Date.now();
+              const lineFirst = spokeThisTurn.current;
               let quiet = 0;
+              let heard = false;
               const waitForSilence = () => {
                 if (!pendingSwitch.current) return;
                 const out = audio.current?.output() ?? 0;
+                if (out >= SWITCH_QUIET_LEVEL) heard = true;
                 quiet = out < SWITCH_QUIET_LEVEL ? quiet + 1 : 0;
                 const elapsed = Date.now() - started;
-                if ((elapsed > SWITCH_MIN_MS && quiet >= SWITCH_QUIET_TICKS) || elapsed > SWITCH_MAX_MS) runSwitch();
+                const lineDone = lineFirst ? elapsed > SWITCH_MIN_MS : heard;
+                if ((lineDone && quiet >= SWITCH_QUIET_TICKS) || elapsed > (lineFirst ? SWITCH_MAX_MS : SWITCH_LATE_LINE_MAX_MS)) runSwitch();
                 else switchTimer.current = setTimeout(waitForSilence, 50);
               };
               switchTimer.current = setTimeout(waitForSilence, 50);
@@ -246,6 +252,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
           onError: () => {},
           onModeChange: ({ mode }) => {
             if (mode === "speaking") {
+              spokeThisTurn.current = true;
               if (pendingSwitch.current) return;
               holdUntil.current = 0;
               heldText.current = "";
@@ -282,6 +289,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
           onMessage: ({ source, message }) => {
             touch();
             if (source === "user") {
+              spokeThisTurn.current = false;
               ignoreParts.current = false;
               const said = [heldText.current, message.trim()].filter(Boolean).join(" ");
               holdUntil.current = 0;
