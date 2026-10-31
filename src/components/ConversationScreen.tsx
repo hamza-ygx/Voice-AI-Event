@@ -17,6 +17,10 @@ const END_SILENCE_MS = 2000;
 const NO_SPEECH_MS = 8000;
 const MAX_LISTEN_MS = 20_000;
 const MAX_THINK_MS = 10_000;
+const DANGLING_SILENCE_MS = 3000;
+const DANGLING_MIN_OPEN_MS = 1500;
+const DANGLING =
+  /(?:^|[\s,])(och|och så|men|eller|att|eftersom|fast|som|när|typ|alltså|liksom|asså|ehm|eh|öh|öhm|hmm|en|ett|and|but|or|because|um|uh|the)[\s,.…-]*$|(\.\.\.|…|-)\s*$/i;
 
 const spoken = (text: string) =>
   text
@@ -83,6 +87,8 @@ export default function ConversationScreen({ character, onExit }: Props) {
   const micTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const phaseSince = useRef(Date.now());
   const lastSpeech = useRef(0);
+  const holdUntil = useRef(0);
+  const heldText = useRef("");
 
   const setPhase = useCallback((p: OrbPhase) => {
     if (phaseRef.current !== p) phaseSince.current = Date.now();
@@ -182,6 +188,8 @@ export default function ConversationScreen({ character, onExit }: Props) {
           onError: () => {},
           onModeChange: ({ mode }) => {
             if (mode === "speaking") {
+              holdUntil.current = 0;
+              heldText.current = "";
               setMic(false);
               touch();
               if (!interrupting.current) setPhase("speaking");
@@ -207,7 +215,22 @@ export default function ConversationScreen({ character, onExit }: Props) {
             touch();
             if (source === "user") {
               ignoreParts.current = false;
-              setUserSaid(message.trim());
+              const said = [heldText.current, message.trim()].filter(Boolean).join(" ");
+              holdUntil.current = 0;
+              heldText.current = "";
+              setUserSaid(said);
+              if (phaseRef.current !== "speaking" && !interrupting.current && DANGLING.test(said)) {
+                const c = conv.current;
+                if (c) {
+                  heldText.current = said;
+                  holdUntil.current = Math.max(Date.now() + DANGLING_MIN_OPEN_MS, (lastSpeech.current || Date.now()) + DANGLING_SILENCE_MS);
+                  heardSpeech.current = false;
+                  c.sendUserActivity();
+                  setMic(true);
+                  setPhase("listening");
+                  return;
+                }
+              }
               if (interrupting.current) {
                 interrupting.current = false;
                 conv.current?.setVolume({ volume: getVolume() });
@@ -283,7 +306,18 @@ export default function ConversationScreen({ character, onExit }: Props) {
       const p = phaseRef.current;
       const now = Date.now();
       const elapsed = now - phaseSince.current;
-      if (p === "listening" && micOpen.current) {
+      if (p === "listening" && micOpen.current && holdUntil.current) {
+        if (heardSpeech.current) {
+          holdUntil.current = 0;
+        } else if (now >= holdUntil.current) {
+          holdUntil.current = 0;
+          heldText.current = "";
+          setMic(false);
+          setPhase("thinking");
+        } else if (now + 2000 <= holdUntil.current + 200) {
+          conv.current?.sendUserActivity();
+        }
+      } else if (p === "listening" && micOpen.current) {
         const done = heardSpeech.current
           ? now - lastSpeech.current > END_SILENCE_MS || elapsed > MAX_LISTEN_MS
           : elapsed > NO_SPEECH_MS;
@@ -304,6 +338,8 @@ export default function ConversationScreen({ character, onExit }: Props) {
     if (!c) return;
     touch();
     const p = phaseRef.current;
+    holdUntil.current = 0;
+    heldText.current = "";
     if (p === "idle") {
       heardSpeech.current = false;
       cueListenStart();

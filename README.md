@@ -111,7 +111,7 @@ Measured 30 Oct 2026, same 4 Kocken tests × 5 runs each:
 - Agent answers → mic mutes, subtitles stream the answer.
 - Click while the agent talks → its audio is muted instantly and the mic opens. The server stops generating when the visitor starts speaking (ElevenLabs has no client-side "stop generation" call; if the visitor stays silent, the rest of the answer is generated but not heard).
 - "Byt person", "Börja om", 60 s without speech from either side, or the 10 min cap → session ends, everything is cleared, back to the picker.
-- The app ends the visitor's turn itself after 2 s without speech (normal pauses mid-sentence are fine), after 20 s of listening at most, and goes back to idle if nobody speaks within 8 s. If no answer arrives within 10 s it returns to idle.
+- The app ends the visitor's turn itself after 2 s without speech (normal pauses mid-sentence are fine), after 20 s of listening at most. If the transcript ends on an unfinished word ("och", "men", "att", "and", "…"), the mic reopens and the agent is held (`sendUserActivity`) until 3 s of silence; anything said in that window is read together with the first part, and goes back to idle if nobody speaks within 8 s. If no answer arrives within 10 s it returns to idle.
 - Short rising/falling tones mark mic open/closed. The mic opens 180 ms after the tone so the tone isn't transcribed.
 - Subtitles reveal at the character's speaking pace, show "Du sa: …" (what speech recognition heard), and after the answer a QR code holds the tip as plain text (nothing leaves the device; the phone just reads the text).
 - A dropped or failed connection retries once automatically before showing the error screen.
