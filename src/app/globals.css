@@ -228,6 +228,10 @@ button:focus-visible {
   border-radius: 50%;
 }
 
+.orb:focus-visible {
+  outline: none;
+}
+
 .orb canvas {
   width: 100%;
   height: 100%;
