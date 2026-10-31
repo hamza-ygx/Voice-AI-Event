@@ -10,11 +10,12 @@ import type { Character } from "@/lib/characters";
 
 const IDLE_LIMIT_MS = 60_000;
 const SPEECH_VAD = 0.5;
+const STILL_TALKING_VAD = 0.25;
 const MIC_OPEN_DELAY_MS = 180;
 const AUTO_RETRIES = 1;
-const END_SILENCE_MS = 1200;
+const END_SILENCE_MS = 2000;
 const NO_SPEECH_MS = 8000;
-const MAX_LISTEN_MS = 15_000;
+const MAX_LISTEN_MS = 20_000;
 const MAX_THINK_MS = 10_000;
 
 const spoken = (text: string) =>
@@ -193,10 +194,13 @@ export default function ConversationScreen({ character, onExit }: Props) {
             }
           },
           onVadScore: ({ vadScore }) => {
-            if (micOpen.current && vadScore > SPEECH_VAD) {
+            if (!micOpen.current) return;
+            if (vadScore > SPEECH_VAD) {
               heardSpeech.current = true;
               lastSpeech.current = Date.now();
               touch();
+            } else if (heardSpeech.current && vadScore > STILL_TALKING_VAD) {
+              lastSpeech.current = Date.now();
             }
           },
           onMessage: ({ source, message }) => {
