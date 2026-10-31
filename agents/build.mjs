@@ -31,6 +31,7 @@ const llm = customSecretId
   : { llm: "gemini-3.1-flash-lite" };
 
 const shared = read("prompts/_shared.md");
+const switchTool = JSON.parse(read("tools/switch_character.json"));
 
 for (const [id, c] of Object.entries(CHARACTERS)) {
   const config = {
@@ -52,6 +53,7 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
           backup_llm_config: customSecretId
             ? { preference: "disabled" }
             : { preference: "override", order: ["gemini-2.5-flash"] },
+          tool_ids: [switchTool.id],
           built_in_tools: {
             language_detection: { type: "system", name: "language_detection", pre_tool_speech: "off", params: { system_tool_type: "language_detection" } },
           },
@@ -99,7 +101,10 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
         zero_retention_mode: true,
       },
       call_limits: { agent_concurrency_limit: 3, daily_limit: 500, bursting_enabled: false },
-      overrides: { custom_llm_extra_body: Boolean(customSecretId) },
+      overrides: {
+        custom_llm_extra_body: Boolean(customSecretId),
+        conversation_config_override: { agent: { first_message: true, language: true } },
+      },
       trust_context: "low",
     },
   };

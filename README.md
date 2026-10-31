@@ -114,6 +114,7 @@ Measured 30 Oct 2026, same 4 Kocken tests × 5 runs each:
 - The app ends the visitor's turn itself after 2 s without speech (normal pauses mid-sentence are fine), after 20 s of listening at most. If the transcript ends on an unfinished word ("och", "men", "att", "and", "…"), the mic reopens and the agent is held (`sendUserActivity`) until 3 s of silence; anything said in that window is read together with the first part, and goes back to idle if nobody speaks within 8 s. If no answer arrives within 10 s it returns to idle.
 - Short rising/falling tones mark mic open/closed. The mic opens 180 ms after the tone so the tone isn't transcribed.
 - Subtitles reveal at the character's speaking pace, show "Du sa: …" (what speech recognition heard), and after the answer a QR code holds the tip as plain text (nothing leaves the device; the phone just reads the text).
+- Hand-off: a character asks "Ska jag skicka över dig till Kocken?". On yes it says so and calls the client tool `switch_character` (`agents/tools/switch_character.json`, runs after its speech). The app waits for the audio to finish, opens the other character's session with the greeting as first message (`overrides.agent.firstMessage` + `language`, allowed per agent), passes the topic as a contextual update, and opens the mic after the greeting.
 - A dropped or failed connection retries once automatically before showing the error screen.
 - The picker rotates a highlighted character and an example question every 4.5 s to draw people in.
 

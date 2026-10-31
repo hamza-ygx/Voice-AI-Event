@@ -6,7 +6,7 @@ import Orb, { type OrbAudio, type OrbPhase } from "./Orb";
 import Subtitles, { type RevealMode } from "./Subtitles";
 import { cueListenStart, cueListenStop } from "@/lib/sounds";
 import { getMicId, getVolume } from "@/lib/settings";
-import type { Character } from "@/lib/characters";
+import { isCharacterId, type Character, type CharacterId } from "@/lib/characters";
 
 const IDLE_LIMIT_MS = 60_000;
 const SPEECH_VAD = 0.5;
@@ -62,12 +62,19 @@ const HINTS: Record<OrbPhase, string> = {
   speaking: "Klicka för att avbryta",
 };
 
+export type Handoff = { from: string; greeting: string; topic: string; language: string };
+
+const HANDOFF_LANGUAGES = ["sv", "en", "de", "da", "no", "fi", "pl", "ar", "es", "fr"];
+const SWITCH_FALLBACK_MS = 8000;
+
 type Props = {
   character: Character;
   onExit: () => void;
+  handoff?: Handoff | null;
+  onSwitch?: (to: CharacterId, handoff: Handoff) => void;
 };
 
-export default function ConversationScreen({ character, onExit }: Props) {
+export default function ConversationScreen({ character, onExit, handoff, onSwitch }: Props) {
   const [phase, setPhaseState] = useState<OrbPhase>("connecting");
   const [subtitle, setSubtitle] = useState("");
   const [userSaid, setUserSaid] = useState("");
@@ -88,6 +95,12 @@ export default function ConversationScreen({ character, onExit }: Props) {
   const phaseSince = useRef(Date.now());
   const lastSpeech = useRef(0);
   const holdUntil = useRef(0);
+  const pendingSwitch = useRef<{ to: CharacterId; handoff: Handoff } | null>(null);
+  const switchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoListen = useRef(false);
+  const handoffRef = useRef(handoff);
+  const onSwitchRef = useRef(onSwitch);
+  onSwitchRef.current = onSwitch;
   const heldText = useRef("");
 
   const setPhase = useCallback((p: OrbPhase) => {
@@ -121,6 +134,15 @@ export default function ConversationScreen({ character, onExit }: Props) {
     [closeSession],
   );
 
+  const runSwitch = useCallback(() => {
+    const next = pendingSwitch.current;
+    if (!next) return;
+    pendingSwitch.current = null;
+    if (switchTimer.current) clearTimeout(switchTimer.current);
+    closeSession();
+    onSwitchRef.current?.(next.to, next.handoff);
+  }, [closeSession]);
+
   const setMic = (open: boolean) => {
     if (micTimer.current) clearTimeout(micTimer.current);
     micOpen.current = open;
@@ -140,6 +162,8 @@ export default function ConversationScreen({ character, onExit }: Props) {
     heardSpeech.current = false;
     interrupting.current = false;
     ignoreParts.current = false;
+    pendingSwitch.current = null;
+    autoListen.current = Boolean(handoffRef.current);
     setError(null);
     setSubtitle("");
     setUserSaid("");
@@ -178,6 +202,29 @@ export default function ConversationScreen({ character, onExit }: Props) {
           textOnly: false,
           useWakeLock: true,
           inputDeviceId: getMicId(),
+          overrides: handoffRef.current
+            ? { agent: { firstMessage: handoffRef.current.greeting, language: handoffRef.current.language as never } }
+            : undefined,
+          clientTools: {
+            switch_character: (p: { character?: unknown; greeting?: unknown; topic?: unknown; language?: unknown }) => {
+              const to = p?.character;
+              if (!isCharacterId(to) || to === character.id || !onSwitchRef.current) return "unavailable";
+              const language = typeof p.language === "string" && HANDOFF_LANGUAGES.includes(p.language) ? p.language : "sv";
+              const greeting =
+                typeof p.greeting === "string" && p.greeting.trim()
+                  ? p.greeting.trim().slice(0, 200)
+                  : `${character.name} sa att du behövde mig, vad kan jag hjälpa dig med?`;
+              const topic = typeof p.topic === "string" ? p.topic.trim().slice(0, 300) : "";
+              pendingSwitch.current = { to, handoff: { from: character.name, greeting, topic, language } };
+              setMic(false);
+              if (phaseRef.current === "speaking") {
+                switchTimer.current = setTimeout(runSwitch, SWITCH_FALLBACK_MS);
+              } else {
+                switchTimer.current = setTimeout(runSwitch, 600);
+              }
+              return "ok";
+            },
+          },
           onConnect: () => touch(),
           onDisconnect: (details) => {
             if (ending.current || cancelled) return;
@@ -197,6 +244,19 @@ export default function ConversationScreen({ character, onExit }: Props) {
               if (interrupting.current) {
                 interrupting.current = false;
                 conv.current?.setVolume({ volume: getVolume() });
+              }
+              if (pendingSwitch.current) {
+                if (switchTimer.current) clearTimeout(switchTimer.current);
+                switchTimer.current = setTimeout(runSwitch, 300);
+                return;
+              }
+              if (autoListen.current && conv.current) {
+                autoListen.current = false;
+                heardSpeech.current = false;
+                cueListenStart();
+                setMic(true);
+                setPhase("listening");
+                return;
               }
               setPhase(micOpen.current ? "listening" : "idle");
             }
@@ -261,6 +321,8 @@ export default function ConversationScreen({ character, onExit }: Props) {
         voice.setMicMuted(true);
         voice.setVolume({ volume: getVolume() });
         retries.current = 0;
+        const h = handoffRef.current;
+        if (h?.topic) voice.sendContextualUpdate(`The visitor was just sent to you by ${h.from}. What they want help with: ${h.topic}`);
         audio.current = {
           input: () => voice.getInputVolume(),
           output: () => voice.getOutputVolume(),
@@ -278,9 +340,10 @@ export default function ConversationScreen({ character, onExit }: Props) {
     return () => {
       cancelled = true;
       if (micTimer.current) clearTimeout(micTimer.current);
+      if (switchTimer.current) clearTimeout(switchTimer.current);
       closeSession();
     };
-  }, [character.id, attempt, closeSession, fail, onExit, setPhase]);
+  }, [character.id, character.name, attempt, closeSession, fail, onExit, setPhase, runSwitch]);
 
   useEffect(() => {
     const id = setInterval(() => {

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CHARACTERS, type CharacterId } from "@/lib/characters";
-import ConversationScreen from "./ConversationScreen";
+import ConversationScreen, { type Handoff } from "./ConversationScreen";
 import Kiosk from "./Kiosk";
 import Orb from "./Orb";
 import StaffPanel from "./StaffPanel";
@@ -14,11 +14,19 @@ export default function Booth() {
   const [selected, setSelected] = useState<CharacterId | null>(null);
   const [round, setRound] = useState(0);
   const [staff, setStaff] = useState(false);
+  const [handoff, setHandoff] = useState<Handoff | null>(null);
   const [tick, setTick] = useState(0);
   const press = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const exit = useCallback(() => {
     setSelected(null);
+    setHandoff(null);
+    setRound((n) => n + 1);
+  }, []);
+
+  const switchTo = useCallback((to: CharacterId, h: Handoff) => {
+    setHandoff(h);
+    setSelected(to);
     setRound((n) => n + 1);
   }, []);
 
@@ -43,7 +51,7 @@ export default function Booth() {
     <>
       <Kiosk />
       {character ? (
-        <ConversationScreen key={round} character={character} onExit={exit} />
+        <ConversationScreen key={round} character={character} onExit={exit} handoff={handoff} onSwitch={switchTo} />
       ) : (
         <main className="screen picker">
           <h1 className="picker-title">Vem vill du prata med?</h1>
@@ -52,7 +60,10 @@ export default function Booth() {
               <button
                 key={c.id}
                 className={`pick${c.id === featured.id ? " featured" : ""}`}
-                onClick={() => setSelected(c.id)}
+                onClick={() => {
+                  setHandoff(null);
+                  setSelected(c.id);
+                }}
                 style={{ "--c": c.color, "--g": c.glow } as React.CSSProperties}
               >
                 <Orb color={c.color} phase="idle" radius={0.34} density={1} className="pick-orb" />
