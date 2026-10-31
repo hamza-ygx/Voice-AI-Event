@@ -6,7 +6,6 @@ import QRCode from "qrcode";
 export type RevealMode = "hold" | "pace" | "all";
 
 const CHARS_PER_SECOND = 15;
-const USER_SAID_MAX = 140;
 
 type Props = {
   text: string;
@@ -42,7 +41,7 @@ function TakeHome({ text }: { text: string }) {
   );
 }
 
-export default function Subtitles({ text, userSaid, mode, rate, takeHome }: Props) {
+export default function Subtitles({ text, mode, rate, takeHome }: Props) {
   const [shown, setShown] = useState(0);
   const shownRef = useRef(0);
 
@@ -76,11 +75,9 @@ export default function Subtitles({ text, userSaid, mode, rate, takeHome }: Prop
   }, [text, mode, rate]);
 
   const visible = cutAtWord(text, shown);
-  const said = userSaid.length > USER_SAID_MAX ? `${userSaid.slice(0, USER_SAID_MAX).trimEnd()}…` : userSaid;
 
   return (
     <div className="subtitles" aria-live="polite">
-      {said && <div className="user-said">Du sa: ”{said}”</div>}
       {visible && <p>{visible}</p>}
       {takeHome && mode === "all" && <TakeHome text={takeHome} />}
     </div>
