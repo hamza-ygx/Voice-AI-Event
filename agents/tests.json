@@ -11,12 +11,47 @@
     "test_8001m670171mejyra4vedpcremb6": "Orben – Psykologen hänvisar matfråga",
     "test_9701m6701arjfrht8e4mbxq1p3m1": "Orben – Trädgårdaren hänvisar husfråga",
     "test_6501m6701ee9e12v5h1bht19w6gr": "Orben – Huset hänvisar stressfråga",
-    "test_4501m6701zhaft680261qg2t2zd9": "Orben – Huset el till behörig elektriker"
+    "test_4501m6701zhaft680261qg2t2zd9": "Orben – Huset el till behörig elektriker",
+    "test_4001m68hvzr3fwzb1m3wmm1zbqyr": "Orben – Kocken skickar vidare till Trädgårdaren",
+    "test_8401m68hvwnze2htfjkgq21tqe7c": "Orben – Psykologen skickar vidare till Kocken",
+    "test_6001m68hw2fafmxtrxdba5hkvd3n": "Orben – Trädgårdaren skickar vidare till Huset",
+    "test_5201m68hw521fdsbrg86ebxmvjdv": "Orben – Huset skickar vidare till Psykologen"
   },
   "suites": {
-    "kocken": ["test_5601m6701jkge81s2rhqq1pgs8p6", "test_5701m6701vjff0wbms2syemctz29", "test_6001m6701qwgez6s1598xx75mwde", "test_2601m6701ngceg4bm5pwxzttpcka", "test_9701m66wph5wfwyvda49xbj3s8ep", "test_6301m67012xzeeqv7495z3wtgr3g"],
-    "psykologen": ["test_5601m6701jkge81s2rhqq1pgs8p6", "test_5701m6701vjff0wbms2syemctz29", "test_6001m6701qwgez6s1598xx75mwde", "test_2601m6701ngceg4bm5pwxzttpcka", "test_7101m66wpn5cfhrtj3xxvfnk7b01", "test_8001m670171mejyra4vedpcremb6"],
-    "tradgardaren": ["test_5601m6701jkge81s2rhqq1pgs8p6", "test_5701m6701vjff0wbms2syemctz29", "test_6001m6701qwgez6s1598xx75mwde", "test_2601m6701ngceg4bm5pwxzttpcka", "test_9701m6701arjfrht8e4mbxq1p3m1"],
-    "huset": ["test_5601m6701jkge81s2rhqq1pgs8p6", "test_5701m6701vjff0wbms2syemctz29", "test_6001m6701qwgez6s1598xx75mwde", "test_2601m6701ngceg4bm5pwxzttpcka", "test_6501m6701ee9e12v5h1bht19w6gr", "test_4501m6701zhaft680261qg2t2zd9"]
+    "kocken": [
+      "test_5601m6701jkge81s2rhqq1pgs8p6",
+      "test_5701m6701vjff0wbms2syemctz29",
+      "test_6001m6701qwgez6s1598xx75mwde",
+      "test_2601m6701ngceg4bm5pwxzttpcka",
+      "test_9701m66wph5wfwyvda49xbj3s8ep",
+      "test_6301m67012xzeeqv7495z3wtgr3g",
+      "test_4001m68hvzr3fwzb1m3wmm1zbqyr"
+    ],
+    "psykologen": [
+      "test_5601m6701jkge81s2rhqq1pgs8p6",
+      "test_5701m6701vjff0wbms2syemctz29",
+      "test_6001m6701qwgez6s1598xx75mwde",
+      "test_2601m6701ngceg4bm5pwxzttpcka",
+      "test_7101m66wpn5cfhrtj3xxvfnk7b01",
+      "test_8001m670171mejyra4vedpcremb6",
+      "test_8401m68hvwnze2htfjkgq21tqe7c"
+    ],
+    "tradgardaren": [
+      "test_5601m6701jkge81s2rhqq1pgs8p6",
+      "test_5701m6701vjff0wbms2syemctz29",
+      "test_6001m6701qwgez6s1598xx75mwde",
+      "test_2601m6701ngceg4bm5pwxzttpcka",
+      "test_9701m6701arjfrht8e4mbxq1p3m1",
+      "test_6001m68hw2fafmxtrxdba5hkvd3n"
+    ],
+    "huset": [
+      "test_5601m6701jkge81s2rhqq1pgs8p6",
+      "test_5701m6701vjff0wbms2syemctz29",
+      "test_6001m6701qwgez6s1598xx75mwde",
+      "test_2601m6701ngceg4bm5pwxzttpcka",
+      "test_6501m6701ee9e12v5h1bht19w6gr",
+      "test_4501m6701zhaft680261qg2t2zd9",
+      "test_5201m68hw521fdsbrg86ebxmvjdv"
+    ]
   }
 }
