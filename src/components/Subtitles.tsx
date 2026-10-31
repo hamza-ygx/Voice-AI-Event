@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
+import { encodeTip } from "@/lib/tipLink";
 
 export type RevealMode = "hold" | "pace" | "all";
 
@@ -25,7 +26,8 @@ function TakeHome({ text }: { text: string }) {
   const [svg, setSvg] = useState("");
   useEffect(() => {
     let alive = true;
-    QRCode.toString(text, { type: "svg", errorCorrectionLevel: "L", margin: 1, color: { dark: "#07080c", light: "#ffffff" } })
+    const link = `${window.location.origin}/tips#${encodeTip(text)}`;
+    QRCode.toString(link, { type: "svg", errorCorrectionLevel: "L", margin: 1, color: { dark: "#07080c", light: "#ffffff" } })
       .then((s) => alive && setSvg(s))
       .catch(() => alive && setSvg(""));
     return () => {
