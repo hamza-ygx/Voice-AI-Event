@@ -210,6 +210,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
             : undefined,
           clientTools: {
             switch_character: (p: { character?: unknown; greeting?: unknown; topic?: unknown; language?: unknown }) => {
+              if (pendingSwitch.current) return "ok";
               const to = p?.character;
               if (!isCharacterId(to) || to === character.id || !onSwitchRef.current) return "unavailable";
               const language = typeof p.language === "string" && HANDOFF_LANGUAGES.includes(p.language) ? p.language : "sv";
