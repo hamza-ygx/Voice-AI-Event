@@ -65,7 +65,10 @@ const HINTS: Record<OrbPhase, string> = {
 export type Handoff = { from: string; greeting: string; topic: string; language: string };
 
 const HANDOFF_LANGUAGES = ["sv", "en", "de", "da", "no", "fi", "pl", "ar", "es", "fr"];
-const SWITCH_FALLBACK_MS = 8000;
+const SWITCH_MIN_MS = 300;
+const SWITCH_MAX_MS = 2500;
+const SWITCH_QUIET_TICKS = 5;
+const SWITCH_QUIET_LEVEL = 0.01;
 
 type Props = {
   character: Character;
@@ -216,12 +219,19 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
                   : `${character.name} sa att du behövde mig, vad kan jag hjälpa dig med?`;
               const topic = typeof p.topic === "string" ? p.topic.trim().slice(0, 300) : "";
               pendingSwitch.current = { to, handoff: { from: character.name, greeting, topic, language } };
+              ignoreParts.current = true;
               setMic(false);
-              if (phaseRef.current === "speaking") {
-                switchTimer.current = setTimeout(runSwitch, SWITCH_FALLBACK_MS);
-              } else {
-                switchTimer.current = setTimeout(runSwitch, 600);
-              }
+              const started = Date.now();
+              let quiet = 0;
+              const waitForSilence = () => {
+                if (!pendingSwitch.current) return;
+                const out = audio.current?.output() ?? 0;
+                quiet = out < SWITCH_QUIET_LEVEL ? quiet + 1 : 0;
+                const elapsed = Date.now() - started;
+                if ((elapsed > SWITCH_MIN_MS && quiet >= SWITCH_QUIET_TICKS) || elapsed > SWITCH_MAX_MS) runSwitch();
+                else switchTimer.current = setTimeout(waitForSilence, 50);
+              };
+              switchTimer.current = setTimeout(waitForSilence, 50);
               return "ok";
             },
           },
@@ -235,6 +245,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
           onError: () => {},
           onModeChange: ({ mode }) => {
             if (mode === "speaking") {
+              if (pendingSwitch.current) return;
               holdUntil.current = 0;
               heldText.current = "";
               setMic(false);
@@ -245,11 +256,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
                 interrupting.current = false;
                 conv.current?.setVolume({ volume: getVolume() });
               }
-              if (pendingSwitch.current) {
-                if (switchTimer.current) clearTimeout(switchTimer.current);
-                switchTimer.current = setTimeout(runSwitch, 300);
-                return;
-              }
+              if (pendingSwitch.current) return;
               if (autoListen.current && conv.current) {
                 autoListen.current = false;
                 heardSpeech.current = false;
