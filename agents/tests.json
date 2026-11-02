@@ -21,7 +21,8 @@
     "test_6901m6emwn5vf029y54a0q4zzjxk": "Orben – Conciergen svarar på engelska utan att bli ombedd",
     "test_7201m6enrdxeevksnsy9aqqndjyj": "Orben – Kocken hänvisar restaurangfråga",
     "test_8101m6enrh8ye77tsrzmh2nkzyc9": "Orben – Conciergen ger ett tips plus insidertips",
-    "test_4401m6enrknye4g9yj2ymz3s98sw": "Orben – Conciergen hänvisar till UD:s reseråd"
+    "test_4401m6enrknye4g9yj2ymz3s98sw": "Orben – Conciergen hänvisar till UD:s reseråd",
+    "test_9501m6epjywpevebexcaves5fq06": "Orben – Conciergen svarar på praktisk resefråga"
   },
   "suites": {
     "kocken": [
@@ -63,7 +64,8 @@
       "test_5201m68hw521fdsbrg86ebxmvjdv",
       "test_6901m6emwn5vf029y54a0q4zzjxk",
       "test_8101m6enrh8ye77tsrzmh2nkzyc9",
-      "test_4401m6enrknye4g9yj2ymz3s98sw"
+      "test_4401m6enrknye4g9yj2ymz3s98sw",
+      "test_9501m6epjywpevebexcaves5fq06"
     ]
   }
 }
