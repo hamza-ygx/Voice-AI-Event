@@ -10,10 +10,10 @@ const customSecretArg = process.argv.indexOf("--custom-llm-secret");
 const customSecretId = customSecretArg > -1 ? process.argv[customSecretArg + 1] : null;
 
 const CHARACTERS = {
-  kocken: { name: "Orben – Kocken", voice_id: "IKne3meq5aSn9XLyUdCD", library_voice_id: "ISDDl0xPNLMD73L5PQj4", stability: 0.4, speed: 1.05, keywords: ["entrecôte", "kyckling", "vin"] },
-  psykologen: { name: "Orben – Psykologen", voice_id: "EXAVITQu4vr4xnSDxMaL", library_voice_id: "kPdGSxhZAqy4bmPAf9iJ", stability: 0.6, speed: 0.92, keywords: ["chef", "somna", "stress"] },
-  tradgardaren: { name: "Orben – Trädgårdaren", voice_id: "JBFqnCBsd6RMkjVDRZzb", library_voice_id: "oJEeOXECH9V31Oci9WHK", stability: 0.55, speed: 0.97, keywords: ["äppelträd", "beskära", "tomater"] },
-  huset: { name: "Orben – Huset", voice_id: "XrExE9yKIg1WjnnlVkGX", library_voice_id: "4Ct5uMEndw4cJ7q0Jx0l", stability: 0.55, speed: 1.03, keywords: ["packning", "avlopp", "kran"] },
+  kocken: { name: "Orben – Kocken", voice_id: "IKne3meq5aSn9XLyUdCD", library_voice_id: "ISDDl0xPNLMD73L5PQj4", stability: 0.4, speed: 1.05, keywords: ["entrecôte", "kyckling", "vin"], example: "What wine goes with steak?" },
+  psykologen: { name: "Orben – Psykologen", voice_id: "EXAVITQu4vr4xnSDxMaL", library_voice_id: "kPdGSxhZAqy4bmPAf9iJ", stability: 0.6, speed: 0.92, keywords: ["chef", "somna", "stress"], example: "How do I say no to my boss?" },
+  tradgardaren: { name: "Orben – Trädgårdaren", voice_id: "JBFqnCBsd6RMkjVDRZzb", library_voice_id: "oJEeOXECH9V31Oci9WHK", stability: 0.55, speed: 0.97, keywords: ["äppelträd", "beskära", "tomater"], example: "When should I prune my apple tree?" },
+  huset: { name: "Orben – Huset", voice_id: "XrExE9yKIg1WjnnlVkGX", library_voice_id: "4Ct5uMEndw4cJ7q0Jx0l", stability: 0.55, speed: 1.03, keywords: ["packning", "avlopp", "kran"], example: "How do I fix a dripping tap?" },
 };
 
 const OTHER_LANGUAGES = ["en", "de", "da", "no", "fi", "pl", "ar", "es", "fr"];
@@ -55,7 +55,13 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
             : { preference: "override", order: ["gemini-2.5-flash"] },
           tool_ids: [switchTool.id],
           built_in_tools: {
-            language_detection: { type: "system", name: "language_detection", pre_tool_speech: "off", params: { system_tool_type: "language_detection" } },
+            language_detection: {
+              type: "system",
+              name: "language_detection",
+              pre_tool_speech: "off",
+              description: `Switch the conversation language. Call this before answering whenever the visitor's latest message is in a different language than the current conversation language (the conversation starts in Swedish). Example: the conversation is in Swedish and the visitor says "${c.example}" - call this with English first, then answer in English. Also call it to switch back if the visitor changes language again.`,
+              params: { system_tool_type: "language_detection", only_at_conversation_start: false },
+            },
           },
         },
       },
