@@ -13,7 +13,7 @@ function sign(payload: string): string {
   return createHmac("sha256", secret()).update(payload).digest("base64url");
 }
 
-function safeEqual(a: string, b: string): boolean {
+export function safeEqual(a: string, b: string): boolean {
   const ha = createHash("sha256").update(a).digest();
   const hb = createHash("sha256").update(b).digest();
   return timingSafeEqual(ha, hb);
