@@ -13,7 +13,7 @@ const CHARACTERS = {
   kocken: { name: "Orben – Kocken", voice_id: "IKne3meq5aSn9XLyUdCD", library_voice_id: "ISDDl0xPNLMD73L5PQj4", stability: 0.4, speed: 1.05, keywords: ["entrecôte", "kyckling", "vin"], example: "What wine goes with steak?" },
   psykologen: { name: "Orben – Psykologen", voice_id: "EXAVITQu4vr4xnSDxMaL", library_voice_id: "kPdGSxhZAqy4bmPAf9iJ", stability: 0.6, speed: 0.92, keywords: ["chef", "somna", "stress"], example: "How do I say no to my boss?" },
   tradgardaren: { name: "Orben – Trädgårdaren", voice_id: "JBFqnCBsd6RMkjVDRZzb", library_voice_id: "oJEeOXECH9V31Oci9WHK", stability: 0.55, speed: 0.97, keywords: ["äppelträd", "beskära", "tomater"], example: "When should I prune my apple tree?" },
-  conciergen: { name: "Orben – Conciergen", voice_id: "TX3LPaxmHKxFdv7VOQHJ", library_voice_id: "zA8eaG1JhG82rhuCip6v", stability: 0.5, speed: 1.03, keywords: ["Barcelona", "Lissabon", "restaurang"], example: "Where should I eat in Barcelona?" },
+  conciergen: { name: "Orben – Conciergen", voice_id: "TX3LPaxmHKxFdv7VOQHJ", library_voice_id: "TIMFVcMCO4bdy7J79GWF", stability: 0.5, speed: 1.03, keywords: ["Barcelona", "Lissabon", "restaurang"], example: "Where should I eat in Barcelona?" },
 };
 
 const OTHER_LANGUAGES = ["en", "de", "da", "no", "fi", "pl", "ar", "es", "fr"];

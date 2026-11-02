@@ -25,7 +25,7 @@ export const CHARACTERS: Character[] = [
       "Vad är en bra höstgryta till helgen?",
     ],
     speechRate: 1.05,
-    gain: 0.6,
+    gain: 0.5,
   },
   {
     id: "psykologen",
@@ -40,7 +40,7 @@ export const CHARACTERS: Character[] = [
       "Hur pratar jag med min tonåring?",
     ],
     speechRate: 0.92,
-    gain: 0.6,
+    gain: 0.5,
   },
   {
     id: "tradgardaren",
@@ -55,7 +55,7 @@ export const CHARACTERS: Character[] = [
       "Hur blir jag av med mossan i gräsmattan?",
     ],
     speechRate: 0.97,
-    gain: 0.6,
+    gain: 0.5,
   },
   {
     id: "conciergen",

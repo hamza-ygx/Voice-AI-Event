@@ -28,3 +28,10 @@ export const setVolume = (v: number) => write(VOLUME_KEY, String(v));
 const HEARD_KEY = "orben.showHeard";
 export const getShowHeard = () => read(HEARD_KEY) === "1";
 export const setShowHeard = (on: boolean) => write(HEARD_KEY, on ? "1" : null);
+
+const GAIN_KEY = "orben.gain.";
+export function getGain(id: string, fallback: number): number {
+  const v = Number(read(GAIN_KEY + id));
+  return Number.isFinite(v) && v > 0 && v <= 1 ? v : fallback;
+}
+export const setGain = (id: string, v: number) => write(GAIN_KEY + id, String(v));

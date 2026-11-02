@@ -5,7 +5,7 @@ import { Conversation, type VoiceConversation } from "@elevenlabs/react";
 import Orb, { type OrbAudio, type OrbPhase } from "./Orb";
 import Subtitles, { type RevealMode } from "./Subtitles";
 import { cueListenStart, cueListenStop } from "@/lib/sounds";
-import { getMicId, getVolume } from "@/lib/settings";
+import { getGain, getMicId, getVolume } from "@/lib/settings";
 import { isCharacterId, type Character, type CharacterId } from "@/lib/characters";
 
 const IDLE_LIMIT_MS = 60_000;
@@ -271,7 +271,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
             } else {
               if (interrupting.current) {
                 interrupting.current = false;
-                conv.current?.setVolume({ volume: getVolume() * character.gain });
+                conv.current?.setVolume({ volume: getVolume() * getGain(character.id, character.gain) });
               }
               if (pendingSwitch.current) return;
               if (autoListen.current && conv.current) {
@@ -321,7 +321,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
               }
               if (interrupting.current) {
                 interrupting.current = false;
-                conv.current?.setVolume({ volume: getVolume() * character.gain });
+                conv.current?.setVolume({ volume: getVolume() * getGain(character.id, character.gain) });
               }
               if (phaseRef.current === "listening") cueListenStop();
               if (phaseRef.current !== "speaking") setPhase("thinking");
@@ -348,7 +348,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
         const voice = c as VoiceConversation;
         conv.current = voice;
         voice.setMicMuted(true);
-        voice.setVolume({ volume: getVolume() * character.gain });
+        voice.setVolume({ volume: getVolume() * getGain(character.id, character.gain) });
         retries.current = 0;
         const h = handoffRef.current;
         if (h?.topic) voice.sendContextualUpdate(`The visitor was just sent to you by ${h.from}. What they want help with: ${h.topic}`);

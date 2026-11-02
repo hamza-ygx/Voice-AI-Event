@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cueTest } from "@/lib/sounds";
-import { getMicId, getShowHeard, getVolume, setMicId, setShowHeard, setVolume } from "@/lib/settings";
+import { getGain, getMicId, getShowHeard, getVolume, setGain, setMicId, setShowHeard, setVolume } from "@/lib/settings";
+import { CHARACTERS } from "@/lib/characters";
 
 type Health = { state: "checking" } | { state: "ok"; ms: number } | { state: "error"; label: string };
 
@@ -15,6 +16,7 @@ export default function StaffPanel({ onClose }: { onClose: () => void }) {
   const [micError, setMicError] = useState("");
   const [volume, setVol] = useState(getVolume());
   const [showHeard, setHeard] = useState(getShowHeard());
+  const [gains, setGains] = useState(() => Object.fromEntries(CHARACTERS.map((c) => [c.id, getGain(c.id, c.gain)])));
   const [search, setSearch] = useState("");
   const [health, setHealth] = useState<Health>({ state: "checking" });
   const [online, setOnline] = useState(true);
@@ -126,6 +128,26 @@ export default function StaffPanel({ onClose }: { onClose: () => void }) {
             </button>
           </div>
           <p className="staff-note">Volymen gäller rösterna. Ställ in datorns huvudvolym först.</p>
+          {CHARACTERS.map((c) => (
+            <div className="staff-row" key={c.id}>
+              <span style={{ minWidth: "7rem" }}>{c.name}</span>
+              <input
+                type="range"
+                min={0.1}
+                max={1}
+                step={0.05}
+                value={gains[c.id]}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  setGain(c.id, v);
+                  setGains((g) => ({ ...g, [c.id]: v }));
+                }}
+                aria-label={`Balans för ${c.name}`}
+              />
+              <span>{Math.round(gains[c.id] * 100)} %</span>
+            </div>
+          ))}
+          <p className="staff-note">Balans per röst: sänk de som låter starkast tills alla fyra låter lika högt.</p>
         </section>
 
         <section>

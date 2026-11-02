@@ -117,7 +117,7 @@ Measured 30 Oct 2026, same 4 Kocken tests × 5 runs each:
 - Short rising/falling tones mark mic open/closed. The mic opens 180 ms after the tone so the tone isn't transcribed.
 - Subtitles reveal at the character's speaking pace, show "Du sa: …" (what speech recognition heard), and after the answer a QR code opens `/tips#<tip>` on the visitor's phone, with buttons to save it to Notes (share sheet), copy it or download it as a .txt. The tip lives only in the URL fragment, which browsers never send to the server, so nothing is stored or logged.
 - Hand-off: a character asks "Ska jag skicka över dig till Kocken?". On yes it says so and calls the client tool `switch_character` (`agents/tools/switch_character.json`, runs after its speech). The app waits for the audio to finish, opens the other character's session with the greeting as first message (`overrides.agent.firstMessage` + `language`, allowed per agent), passes the topic as a contextual update, and opens the mic after the greeting.
-- Voices differ in loudness. `gain` in `src/lib/characters.ts` evens them out (Andreas's samples are about 5 dB quieter, so he plays at 1.0 and the others at 0.6). Fine-tune by ear at the sound check.
+- Voices differ in loudness. Default `gain` in `src/lib/characters.ts` is 1.0 for Conciergen (Andreas, a quiet voice) and 0.5 for the others; the staff panel has a balance slider per character (saved in the browser) to even them out by ear at the sound check.
 - A dropped or failed connection retries once automatically before showing the error screen.
 - The picker rotates a highlighted character and an example question every 4.5 s to draw people in.
 
