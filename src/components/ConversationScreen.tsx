@@ -271,7 +271,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
             } else {
               if (interrupting.current) {
                 interrupting.current = false;
-                conv.current?.setVolume({ volume: getVolume() });
+                conv.current?.setVolume({ volume: getVolume() * character.gain });
               }
               if (pendingSwitch.current) return;
               if (autoListen.current && conv.current) {
@@ -321,7 +321,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
               }
               if (interrupting.current) {
                 interrupting.current = false;
-                conv.current?.setVolume({ volume: getVolume() });
+                conv.current?.setVolume({ volume: getVolume() * character.gain });
               }
               if (phaseRef.current === "listening") cueListenStop();
               if (phaseRef.current !== "speaking") setPhase("thinking");
@@ -348,7 +348,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
         const voice = c as VoiceConversation;
         conv.current = voice;
         voice.setMicMuted(true);
-        voice.setVolume({ volume: getVolume() });
+        voice.setVolume({ volume: getVolume() * character.gain });
         retries.current = 0;
         const h = handoffRef.current;
         if (h?.topic) voice.sendContextualUpdate(`The visitor was just sent to you by ${h.from}. What they want help with: ${h.topic}`);

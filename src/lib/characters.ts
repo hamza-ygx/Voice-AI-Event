@@ -8,6 +8,7 @@ export type Character = {
   example: string;
   examples: string[];
   speechRate: number;
+  gain: number;
 };
 
 export const CHARACTERS: Character[] = [
@@ -24,6 +25,7 @@ export const CHARACTERS: Character[] = [
       "Vad är en bra höstgryta till helgen?",
     ],
     speechRate: 1.05,
+    gain: 0.6,
   },
   {
     id: "psykologen",
@@ -38,6 +40,7 @@ export const CHARACTERS: Character[] = [
       "Hur pratar jag med min tonåring?",
     ],
     speechRate: 0.92,
+    gain: 0.6,
   },
   {
     id: "tradgardaren",
@@ -52,6 +55,7 @@ export const CHARACTERS: Character[] = [
       "Hur blir jag av med mossan i gräsmattan?",
     ],
     speechRate: 0.97,
+    gain: 0.6,
   },
   {
     id: "conciergen",
@@ -66,6 +70,7 @@ export const CHARACTERS: Character[] = [
       "Vart tar jag en kund på middag i Stockholm?",
     ],
     speechRate: 1.03,
+    gain: 1,
   },
 ];
 
