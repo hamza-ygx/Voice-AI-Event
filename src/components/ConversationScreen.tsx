@@ -65,6 +65,7 @@ const HINTS: Record<OrbPhase, string> = {
 export type Handoff = { from: string; greeting: string; topic: string; language: string };
 
 const HANDOFF_LANGUAGES = ["sv", "en", "de", "da", "no", "fi", "pl", "ar", "es", "fr"];
+const CHARACTER_WORDS = /(kocken|psykologen|trädgårdaren|conciergen|chef|cook|psychologist|therapist|gardener|concierge)/i;
 const SWITCH_MIN_MS = 300;
 const SWITCH_MAX_MS = 2500;
 const SWITCH_LATE_LINE_MAX_MS = 5000;
@@ -103,6 +104,8 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
   const switchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoListen = useRef(false);
   const spokeThisTurn = useRef(false);
+  const lastAgentText = useRef("");
+  const switchAllowed = useRef(false);
   const handoffRef = useRef(handoff);
   const onSwitchRef = useRef(onSwitch);
   onSwitchRef.current = onSwitch;
@@ -213,6 +216,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
           clientTools: {
             switch_character: (p: { character?: unknown; greeting?: unknown; topic?: unknown; language?: unknown }) => {
               if (pendingSwitch.current) return "ok";
+              if (!switchAllowed.current) return "not_switched: ask first and wait for the visitor's yes";
               const to = p?.character;
               if (!isCharacterId(to) || to === character.id || !onSwitchRef.current) return "unavailable";
               const language = typeof p.language === "string" && HANDOFF_LANGUAGES.includes(p.language) ? p.language : "sv";
@@ -295,6 +299,9 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
               holdUntil.current = 0;
               heldText.current = "";
               setUserSaid(said);
+              const offered = CHARACTER_WORDS.test(lastAgentText.current) && lastAgentText.current.includes("?");
+              switchAllowed.current = offered || CHARACTER_WORDS.test(said);
+              lastAgentText.current = "";
               if (phaseRef.current !== "speaking" && !interrupting.current && DANGLING.test(said)) {
                 const c = conv.current;
                 if (c) {
@@ -313,8 +320,9 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
               }
               if (phaseRef.current === "listening") cueListenStop();
               if (phaseRef.current !== "speaking") setPhase("thinking");
-            } else if (!ignoreParts.current) {
-              setSubtitle(message);
+            } else {
+              lastAgentText.current = message;
+              if (!ignoreParts.current) setSubtitle(message);
             }
           },
           onAgentChatResponsePart: ({ type, text }) => {

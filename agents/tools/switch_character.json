@@ -3,7 +3,7 @@
   "tool_config": {
     "type": "client",
     "name": "switch_character",
-    "description": "Hand the visitor over to another character. Call it only after the visitor has agreed to be sent over (for example says yes, ja, gärna, skicka mig) or directly asks to talk to that character. In the same turn, first say one short sentence such as 'Jag skickar över dig till Kocken nu.', then call this tool. Never call it for your own character.",
+    "description": "Hand the visitor over to another character. Never call it in the same turn as asking whether to send them. Call it only after the visitor has answered yes to that question (for example says yes, ja, gärna, skicka mig) or directly asks to talk to that character. In the same turn, first say one short sentence such as 'Jag skickar över dig till Kocken nu.', then call this tool. Never call it for your own character.",
     "expects_response": false,
     "execution_mode": "post_tool_speech",
     "pre_tool_speech": "off",

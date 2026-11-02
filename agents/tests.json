@@ -9,16 +9,19 @@
     "test_6301m67012xzeeqv7495z3wtgr3g": "Orben – Kocken hänvisar trädgårdsfråga",
     "test_7101m66wpn5cfhrtj3xxvfnk7b01": "Orben – Psykologen krisrutin",
     "test_8001m670171mejyra4vedpcremb6": "Orben – Psykologen hänvisar matfråga",
-    "test_9701m6701arjfrht8e4mbxq1p3m1": "Orben – Trädgårdaren hänvisar husfråga",
-    "test_6501m6701ee9e12v5h1bht19w6gr": "Orben – Huset hänvisar stressfråga",
+    "test_9701m6701arjfrht8e4mbxq1p3m1": "Orben – Trädgårdaren hänvisar resefråga",
+    "test_6501m6701ee9e12v5h1bht19w6gr": "Orben – Conciergen hänvisar stressfråga",
     "test_4001m68hvzr3fwzb1m3wmm1zbqyr": "Orben – Kocken skickar vidare till Trädgårdaren",
     "test_8401m68hvwnze2htfjkgq21tqe7c": "Orben – Psykologen skickar vidare till Kocken",
-    "test_6001m68hw2fafmxtrxdba5hkvd3n": "Orben – Trädgårdaren skickar vidare till Huset",
-    "test_5201m68hw521fdsbrg86ebxmvjdv": "Orben – Huset skickar vidare till Psykologen",
+    "test_6001m68hw2fafmxtrxdba5hkvd3n": "Orben – Trädgårdaren skickar vidare till Conciergen",
+    "test_5201m68hw521fdsbrg86ebxmvjdv": "Orben – Conciergen skickar vidare till Psykologen",
     "test_8701m6emwdjsf43a7cv00n0vbt4a": "Orben – Kocken svarar på engelska utan att bli ombedd",
     "test_5801m6emwg8zf3tvm4k9rxmpfjy1": "Orben – Psykologen svarar på engelska utan att bli ombedd",
     "test_1301m6emwjntfcjr6grwmqm2crns": "Orben – Trädgårdaren svarar på engelska utan att bli ombedd",
-    "test_6901m6emwn5vf029y54a0q4zzjxk": "Orben – Huset svarar på engelska utan att bli ombedd"
+    "test_6901m6emwn5vf029y54a0q4zzjxk": "Orben – Conciergen svarar på engelska utan att bli ombedd",
+    "test_7201m6enrdxeevksnsy9aqqndjyj": "Orben – Kocken hänvisar restaurangfråga",
+    "test_8101m6enrh8ye77tsrzmh2nkzyc9": "Orben – Conciergen ger ett tips plus insidertips",
+    "test_4401m6enrknye4g9yj2ymz3s98sw": "Orben – Conciergen hänvisar till UD:s reseråd"
   },
   "suites": {
     "kocken": [
@@ -29,7 +32,8 @@
       "test_9701m66wph5wfwyvda49xbj3s8ep",
       "test_6301m67012xzeeqv7495z3wtgr3g",
       "test_4001m68hvzr3fwzb1m3wmm1zbqyr",
-      "test_8701m6emwdjsf43a7cv00n0vbt4a"
+      "test_8701m6emwdjsf43a7cv00n0vbt4a",
+      "test_7201m6enrdxeevksnsy9aqqndjyj"
     ],
     "psykologen": [
       "test_5601m6701jkge81s2rhqq1pgs8p6",
@@ -57,7 +61,9 @@
       "test_2601m6701ngceg4bm5pwxzttpcka",
       "test_6501m6701ee9e12v5h1bht19w6gr",
       "test_5201m68hw521fdsbrg86ebxmvjdv",
-      "test_6901m6emwn5vf029y54a0q4zzjxk"
+      "test_6901m6emwn5vf029y54a0q4zzjxk",
+      "test_8101m6enrh8ye77tsrzmh2nkzyc9",
+      "test_4401m6enrknye4g9yj2ymz3s98sw"
     ]
   }
 }
