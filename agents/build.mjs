@@ -32,6 +32,7 @@ const llm = customSecretId
 
 const shared = read("prompts/_shared.md");
 const switchTool = JSON.parse(read("tools/switch_character.json"));
+const searchTool = JSON.parse(read("tools/web_search.json"));
 
 for (const [id, c] of Object.entries(CHARACTERS)) {
   const config = {
@@ -53,7 +54,7 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
           backup_llm_config: customSecretId
             ? { preference: "disabled" }
             : { preference: "override", order: ["gemini-2.5-flash"] },
-          tool_ids: [switchTool.id],
+          tool_ids: id === "conciergen" ? [switchTool.id, searchTool.id] : [switchTool.id],
           built_in_tools: {
             language_detection: {
               type: "system",

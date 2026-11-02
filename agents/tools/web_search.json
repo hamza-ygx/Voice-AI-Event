@@ -1,21 +1,30 @@
 {
-  "id": null,
+  "id": "tool_6101m6eq5jdqey1bfh30rth9cpdy",
   "secret_name": "orben_search_token",
   "tool_config": {
     "type": "webhook",
     "name": "web_search",
-    "description": "Search the web for current, factual travel information: rules, age limits, licences, prices, opening hours, events, whether a place exists. Use it when the answer may have changed or you are not sure. Write a short neutral search query with no personal details about the visitor. Answer in your own words from the result in one or two sentences.",
+    "description": "Search the web for current, factual travel information: rules, age limits, licences, prices, opening hours, events, whether a place exists. Use it when the answer may have changed or you are not sure. Write a short neutral search query with no personal details about the visitor. Answer in your own words from the result in one or two sentences, never reading out web addresses or source names.",
     "pre_tool_speech": "force",
-    "response_timeout_secs": 6,
+    "response_timeout_secs": 8,
     "api_schema": {
       "url": "https://voiceorbagent.vercel.app/api/search",
       "method": "POST",
-      "request_headers": { "Authorization": { "secret_id": "<orben_search_token secret id>" } },
+      "request_headers": {
+        "Authorization": {
+          "secret_id": "sCatll6DG8Nd07pUkKwS"
+        }
+      },
       "request_body_schema": {
         "type": "object",
-        "required": ["query"],
+        "required": [
+          "query"
+        ],
         "properties": {
-          "query": { "type": "string", "description": "Short neutral web search query, for example 'hyra båt Italien utan båtkörkort åldersgräns'." }
+          "query": {
+            "type": "string",
+            "description": "Short neutral web search query, for example 'hyra båt Italien utan båtkörkort åldersgräns'."
+          }
         }
       }
     }

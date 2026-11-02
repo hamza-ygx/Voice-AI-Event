@@ -23,7 +23,8 @@
           ]
         },
         "tool_ids": [
-          "tool_2801m68hmqkhftcabf7qhc3dgh3a"
+          "tool_2801m68hmqkhftcabf7qhc3dgh3a",
+          "tool_6101m6eq5jdqey1bfh30rth9cpdy"
         ],
         "built_in_tools": {
           "language_detection": {
