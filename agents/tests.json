@@ -22,7 +22,8 @@
     "test_7201m6enrdxeevksnsy9aqqndjyj": "Orben – Kocken hänvisar restaurangfråga",
     "test_8101m6enrh8ye77tsrzmh2nkzyc9": "Orben – Conciergen ger ett tips plus insidertips",
     "test_4401m6enrknye4g9yj2ymz3s98sw": "Orben – Conciergen hänvisar till UD:s reseråd",
-    "test_9501m6epjywpevebexcaves5fq06": "Orben – Conciergen svarar på praktisk resefråga"
+    "test_9501m6epjywpevebexcaves5fq06": "Orben – Conciergen svarar på praktisk resefråga",
+    "test_2401m6eqas1dfyv8td8te9b9cs23": "Orben – Conciergen söker aktuell info"
   },
   "suites": {
     "kocken": [
@@ -65,7 +66,8 @@
       "test_6901m6emwn5vf029y54a0q4zzjxk",
       "test_8101m6enrh8ye77tsrzmh2nkzyc9",
       "test_4401m6enrknye4g9yj2ymz3s98sw",
-      "test_9501m6epjywpevebexcaves5fq06"
+      "test_9501m6epjywpevebexcaves5fq06",
+      "test_2401m6eqas1dfyv8td8te9b9cs23"
     ]
   }
 }

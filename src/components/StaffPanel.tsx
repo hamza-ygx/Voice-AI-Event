@@ -6,6 +6,8 @@ import { getMicId, getShowHeard, getVolume, setMicId, setShowHeard, setVolume } 
 
 type Health = { state: "checking" } | { state: "ok"; ms: number } | { state: "error"; label: string };
 
+const SEARCH_LABELS: Record<string, string> = { ok: "OK", not_configured: "inte inställd" };
+
 export default function StaffPanel({ onClose }: { onClose: () => void }) {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [micId, setMic] = useState<string>(getMicId() ?? "");
@@ -13,6 +15,7 @@ export default function StaffPanel({ onClose }: { onClose: () => void }) {
   const [micError, setMicError] = useState("");
   const [volume, setVol] = useState(getVolume());
   const [showHeard, setHeard] = useState(getShowHeard());
+  const [search, setSearch] = useState("");
   const [health, setHealth] = useState<Health>({ state: "checking" });
   const [online, setOnline] = useState(true);
   const stream = useRef<MediaStream | null>(null);
@@ -22,7 +25,8 @@ export default function StaffPanel({ onClose }: { onClose: () => void }) {
     try {
       const res = await fetch("/api/health", { cache: "no-store" });
       if (res.status === 401) return setHealth({ state: "error", label: "PIN-inloggningen har gått ut, ladda om sidan" });
-      const body = (await res.json()) as { voice?: string; ms?: number };
+      const body = (await res.json()) as { voice?: string; ms?: number; search?: string };
+      setSearch(body.search ?? "");
       if (body.voice === "ok") setHealth({ state: "ok", ms: body.ms ?? 0 });
       else setHealth({ state: "error", label: `svarar inte (${body.voice ?? res.status})` });
     } catch {
@@ -147,6 +151,11 @@ export default function StaffPanel({ onClose }: { onClose: () => void }) {
             Röstjänsten:{" "}
             {health.state === "checking" ? "kontrollerar…" : health.state === "ok" ? `OK (${health.ms} ms)` : health.label}
           </p>
+          {search && (
+            <p className={`staff-status ${search === "ok" ? "ok" : "bad"}`}>
+              Webbsök (Conciergen): {SEARCH_LABELS[search] ?? `fel (${search})`}
+            </p>
+          )}
           <button className="chip" onClick={checkHealth}>
             Kontrollera igen
           </button>

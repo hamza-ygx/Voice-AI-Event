@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import registry from "../../../../agents/agents.json";
 import { isValidSession, SESSION_COOKIE } from "@/lib/auth";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
+import { searchConfigured, tavilySearch } from "@/lib/search";
 
 export const runtime = "nodejs";
 
@@ -25,8 +26,18 @@ export async function GET(req: Request) {
     const url = new URL("https://api.elevenlabs.io/v1/convai/conversation/token");
     url.searchParams.set("agent_id", agentId);
     const res = await fetch(url, { headers: { "xi-api-key": apiKey }, cache: "no-store" });
+    const ms = Date.now() - started;
+    let search = "not_configured";
+    if (searchConfigured()) {
+      try {
+        await tavilySearch("weather Stockholm today");
+        search = "ok";
+      } catch (e) {
+        search = e instanceof Error ? e.message : "error";
+      }
+    }
     return NextResponse.json(
-      { voice: res.ok ? "ok" : `error_${res.status}`, ms: Date.now() - started },
+      { voice: res.ok ? "ok" : `error_${res.status}`, ms, search },
       { headers: noStore },
     );
   } catch {
