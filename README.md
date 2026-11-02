@@ -39,7 +39,7 @@ agents/                agents as code (see below)
 | `SESSION_SECRET` | Random, ≥ 32 chars. PowerShell: `$b=New-Object byte[] 32;[Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b);[Convert]::ToBase64String($b)\|Set-Clipboard` |
 | `ELEVENLABS_API_KEY` | Restricted key, "ElevenLabs Agents" permission only, **from the same workspace as the agents** |
 | `TAVILY_API_KEY` | Web search for Conciergen (`/api/search`). Queries are short and contain no visitor details |
-| `ORBEN_SEARCH_TOKEN` | Random, ≥ 32 chars. Same value as the ElevenLabs workspace secret `orben_search_token`; the `web_search` webhook tool sends it as `Authorization: Bearer …` |
+| `ORBEN_SEARCH_TOKEN` | Random, ≥ 32 chars. Same value as the ElevenLabs workspace secret `orben_search_token`; the `web_search` webhook tool sends it in the `Authorization` header |
 
 Changing the PIN does not log out the booth. Rotate `SESSION_SECRET` to force everyone to re-enter it. Every env change needs a redeploy.
 

@@ -15,7 +15,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "not_configured" }, { status: 503, headers: noStore });
   }
   const auth = req.headers.get("authorization") ?? "";
-  if (!safeEqual(auth, `Bearer ${token}`)) {
+  const presented = auth.startsWith("Bearer ") ? auth.slice(7) : auth;
+  if (!safeEqual(presented, token)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401, headers: noStore });
   }
   if (!rateLimit("search", 60, 60 * 1000)) {
