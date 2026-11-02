@@ -216,7 +216,12 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
           clientTools: {
             switch_character: (p: { character?: unknown; greeting?: unknown; topic?: unknown; language?: unknown }) => {
               if (pendingSwitch.current) return "ok";
-              if (!switchAllowed.current) return "not_switched: ask first and wait for the visitor's yes";
+              if (!switchAllowed.current) {
+                conv.current?.sendContextualUpdate(
+                  "switch_character was ignored: the visitor has not said yes yet. Ask them first; if they then say yes, call switch_character again.",
+                );
+                return "not_switched";
+              }
               const to = p?.character;
               if (!isCharacterId(to) || to === character.id || !onSwitchRef.current) return "unavailable";
               const language = typeof p.language === "string" && HANDOFF_LANGUAGES.includes(p.language) ? p.language : "sv";
