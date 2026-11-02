@@ -24,3 +24,7 @@ export function getVolume(): number {
   return Number.isFinite(v) && v > 0 && v <= 1 ? v : 1;
 }
 export const setVolume = (v: number) => write(VOLUME_KEY, String(v));
+
+const HEARD_KEY = "orben.showHeard";
+export const getShowHeard = () => read(HEARD_KEY) === "1";
+export const setShowHeard = (on: boolean) => write(HEARD_KEY, on ? "1" : null);

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { encodeTip } from "@/lib/tipLink";
+import { getShowHeard } from "@/lib/settings";
 
 export type RevealMode = "hold" | "pace" | "all";
 
@@ -43,7 +44,7 @@ function TakeHome({ text }: { text: string }) {
   );
 }
 
-export default function Subtitles({ text, mode, rate, takeHome }: Props) {
+export default function Subtitles({ text, userSaid, mode, rate, takeHome }: Props) {
   const [shown, setShown] = useState(0);
   const shownRef = useRef(0);
 
@@ -80,6 +81,7 @@ export default function Subtitles({ text, mode, rate, takeHome }: Props) {
 
   return (
     <div className="subtitles" aria-live="polite">
+      {userSaid && getShowHeard() && <div className="user-said">Du sa: ”{userSaid}”</div>}
       {visible && <p>{visible}</p>}
       {takeHome && mode === "all" && <TakeHome text={takeHome} />}
     </div>

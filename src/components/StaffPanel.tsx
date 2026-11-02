@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cueTest } from "@/lib/sounds";
-import { getMicId, getVolume, setMicId, setVolume } from "@/lib/settings";
+import { getMicId, getShowHeard, getVolume, setMicId, setShowHeard, setVolume } from "@/lib/settings";
 
 type Health = { state: "checking" } | { state: "ok"; ms: number } | { state: "error"; label: string };
 
@@ -12,6 +12,7 @@ export default function StaffPanel({ onClose }: { onClose: () => void }) {
   const [level, setLevel] = useState(0);
   const [micError, setMicError] = useState("");
   const [volume, setVol] = useState(getVolume());
+  const [showHeard, setHeard] = useState(getShowHeard());
   const [health, setHealth] = useState<Health>({ state: "checking" });
   const [online, setOnline] = useState(true);
   const stream = useRef<MediaStream | null>(null);
@@ -121,6 +122,22 @@ export default function StaffPanel({ onClose }: { onClose: () => void }) {
             </button>
           </div>
           <p className="staff-note">Volymen gäller rösterna. Ställ in datorns huvudvolym först.</p>
+        </section>
+
+        <section>
+          <h3>Felsökning</h3>
+          <label className="staff-row">
+            <input
+              type="checkbox"
+              checked={showHeard}
+              onChange={(e) => {
+                setShowHeard(e.target.checked);
+                setHeard(e.target.checked);
+              }}
+            />
+            <span>Visa vad rösten hörde ("Du sa: …")</span>
+          </label>
+          <p className="staff-note">Bara för test. Stäng av före eventet.</p>
         </section>
 
         <section>
