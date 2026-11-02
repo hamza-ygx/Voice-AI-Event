@@ -7,7 +7,7 @@ Voice booth app for the RKJH client event (15 November 2026, 15:00–23:00). A v
 | Kocken | yellow | food, cooking, drinks |
 | Psykologen | pink | everyday life, relationships, stress |
 | Trädgårdaren | green | garden and plants, Halland climate |
-| Huset | slate blue | home repairs and maintenance |
+| Conciergen | turquoise | travel, restaurants and things to do around the world |
 
 ## Architecture
 
@@ -52,7 +52,7 @@ Changing the PIN does not log out the booth. Rotate `SESSION_SECRET` to force ev
 - `agents/tests.json`: the ElevenLabs LLM tests and which run per character. Re-run them after every prompt change.
 
 ```bash
-node agents/build.mjs                                   # current: Gemini + Swedish voices (Filip, Evelina, Peter, Elin)
+node agents/build.mjs                                   # current: Gemini + Swedish voices (Filip, Evelina, Peter, Atlas)
 node agents/build.mjs --placeholder-voices              # English premade voices (fallback)
 node agents/build.mjs --custom-llm-secret <secret_id>   # Claude Haiku 5.5 via your Anthropic key
 ```

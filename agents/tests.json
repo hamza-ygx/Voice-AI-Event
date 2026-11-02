@@ -11,7 +11,6 @@
     "test_8001m670171mejyra4vedpcremb6": "Orben – Psykologen hänvisar matfråga",
     "test_9701m6701arjfrht8e4mbxq1p3m1": "Orben – Trädgårdaren hänvisar husfråga",
     "test_6501m6701ee9e12v5h1bht19w6gr": "Orben – Huset hänvisar stressfråga",
-    "test_4501m6701zhaft680261qg2t2zd9": "Orben – Huset el till behörig elektriker",
     "test_4001m68hvzr3fwzb1m3wmm1zbqyr": "Orben – Kocken skickar vidare till Trädgårdaren",
     "test_8401m68hvwnze2htfjkgq21tqe7c": "Orben – Psykologen skickar vidare till Kocken",
     "test_6001m68hw2fafmxtrxdba5hkvd3n": "Orben – Trädgårdaren skickar vidare till Huset",
@@ -51,13 +50,12 @@
       "test_6001m68hw2fafmxtrxdba5hkvd3n",
       "test_1301m6emwjntfcjr6grwmqm2crns"
     ],
-    "huset": [
+    "conciergen": [
       "test_5601m6701jkge81s2rhqq1pgs8p6",
       "test_5701m6701vjff0wbms2syemctz29",
       "test_6001m6701qwgez6s1598xx75mwde",
       "test_2601m6701ngceg4bm5pwxzttpcka",
       "test_6501m6701ee9e12v5h1bht19w6gr",
-      "test_4501m6701zhaft680261qg2t2zd9",
       "test_5201m68hw521fdsbrg86ebxmvjdv",
       "test_6901m6emwn5vf029y54a0q4zzjxk"
     ]

@@ -13,7 +13,7 @@ const CHARACTERS = {
   kocken: { name: "Orben – Kocken", voice_id: "IKne3meq5aSn9XLyUdCD", library_voice_id: "ISDDl0xPNLMD73L5PQj4", stability: 0.4, speed: 1.05, keywords: ["entrecôte", "kyckling", "vin"], example: "What wine goes with steak?" },
   psykologen: { name: "Orben – Psykologen", voice_id: "EXAVITQu4vr4xnSDxMaL", library_voice_id: "kPdGSxhZAqy4bmPAf9iJ", stability: 0.6, speed: 0.92, keywords: ["chef", "somna", "stress"], example: "How do I say no to my boss?" },
   tradgardaren: { name: "Orben – Trädgårdaren", voice_id: "JBFqnCBsd6RMkjVDRZzb", library_voice_id: "oJEeOXECH9V31Oci9WHK", stability: 0.55, speed: 0.97, keywords: ["äppelträd", "beskära", "tomater"], example: "When should I prune my apple tree?" },
-  huset: { name: "Orben – Huset", voice_id: "XrExE9yKIg1WjnnlVkGX", library_voice_id: "4Ct5uMEndw4cJ7q0Jx0l", stability: 0.55, speed: 1.03, keywords: ["packning", "avlopp", "kran"], example: "How do I fix a dripping tap?" },
+  conciergen: { name: "Orben – Conciergen", voice_id: "TX3LPaxmHKxFdv7VOQHJ", library_voice_id: "nQnObYhERMRKcoUcZUyA", stability: 0.5, speed: 1.03, keywords: ["Barcelona", "Lissabon", "restaurang"], example: "Where should I eat in Barcelona?" },
 };
 
 const OTHER_LANGUAGES = ["en", "de", "da", "no", "fi", "pl", "ar", "es", "fr"];
@@ -82,7 +82,7 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
         silence_end_call_timeout: 60,
         soft_timeout_config: { timeout_seconds: -1 },
       },
-      asr: { keywords: ["Kocken", "Psykologen", "Trädgårdaren", "Huset", ...c.keywords] },
+      asr: { keywords: ["Kocken", "Psykologen", "Trädgårdaren", "Conciergen", ...c.keywords] },
       conversation: {
         max_duration_seconds: 600,
         client_events: [

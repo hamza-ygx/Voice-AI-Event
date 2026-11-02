@@ -1,4 +1,4 @@
-export type CharacterId = "kocken" | "psykologen" | "tradgardaren" | "huset";
+export type CharacterId = "kocken" | "psykologen" | "tradgardaren" | "conciergen";
 
 export type Character = {
   id: CharacterId;
@@ -54,16 +54,16 @@ export const CHARACTERS: Character[] = [
     speechRate: 0.97,
   },
   {
-    id: "huset",
-    name: "Huset",
-    color: "#7C93B8",
-    glow: "rgba(124, 147, 184, 0.55)",
-    example: "Hur byter jag en packning i kranen?",
+    id: "conciergen",
+    name: "Conciergen",
+    color: "#22B8CF",
+    glow: "rgba(34, 184, 207, 0.55)",
+    example: "Var ska jag äta i Barcelona?",
     examples: [
-      "Hur byter jag en packning i kranen?",
-      "Det luktar från avloppet, vad gör jag?",
-      "Hur luftar jag elementen?",
-      "Det drar från fönstret, hur tätar jag?",
+      "Var ska jag äta i Barcelona?",
+      "Vad gör jag en helg i London?",
+      "Vart ska jag resa i februari?",
+      "Vart tar jag en kund på middag i Stockholm?",
     ],
     speechRate: 1.03,
   },
