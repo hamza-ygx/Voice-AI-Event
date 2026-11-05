@@ -32,14 +32,7 @@ const llm = customSecretId
   : { llm: "gemini-3.1-flash-lite" };
 
 const shared = read("prompts/_shared.md");
-const SPECIALIST_ONLY = ["- Stay inside your own field.", "- If the visitor asks about another character's field", "- If a question is outside every specialist's field", "- Never offer to send the visitor to yourself."];
-const kompisenShared = shared
-  .split("\n")
-  .filter((line) => !SPECIALIST_ONLY.some((p) => line.startsWith(p)))
-  .join("\n")
-  .replace("# Staying in your field", "# Other characters")
-  .replace("- If the visitor then says yes in any way, or at any point asks", "- You answer every question yourself and never offer to send the visitor anywhere. Only if the visitor at any point asks");
-const switchTool = JSON.parse(read("tools/switch_character.json"));
+
 const searchTool = JSON.parse(read("tools/web_search.json"));
 
 for (const [id, c] of Object.entries(CHARACTERS)) {
@@ -52,17 +45,17 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
         language: "sv",
         disable_first_message_interruptions: false,
         prompt: {
-          prompt: `${read(`prompts/${id}.md`)}\n\n${id === "kompisen" ? kompisenShared : shared}`,
+          prompt: `${read(`prompts/${id}.md`)}\n\n${shared}`,
           ...llm,
           temperature: customSecretId ? null : 0.4,
-          max_tokens: id === "psykologen" || id === "kompisen" ? 320 : 240,
+          max_tokens: 320,
           thinking_budget: 0,
           timezone: "Europe/Stockholm",
           ignore_default_personality: true,
           backup_llm_config: customSecretId
             ? { preference: "disabled" }
             : { preference: "override", order: ["gemini-2.5-flash"] },
-          tool_ids: id === "conciergen" || id === "kompisen" ? [switchTool.id, searchTool.id] : [switchTool.id],
+          tool_ids: [searchTool.id],
           built_in_tools: {
             language_detection: {
               type: "system",
@@ -118,7 +111,6 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
       call_limits: { agent_concurrency_limit: 3, daily_limit: 500, bursting_enabled: false },
       overrides: {
         custom_llm_extra_body: Boolean(customSecretId),
-        conversation_config_override: { agent: { first_message: true, language: true } },
       },
       trust_context: "low",
     },
