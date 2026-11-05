@@ -179,9 +179,11 @@ button:focus-visible {
   position: fixed;
   bottom: 1.5rem;
   right: 2rem;
-  font-size: 0.8rem;
+  z-index: 2;
+  padding: 0.75rem;
+  font-size: 0.9rem;
   letter-spacing: 0.35em;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .conversation {
@@ -336,7 +338,8 @@ body.cursor-hidden * {
   font-weight: 500;
 }
 
-.wordmark {
+.wordmark,
+.picker-title {
   user-select: none;
   touch-action: none;
 }

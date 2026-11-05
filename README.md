@@ -124,7 +124,7 @@ Measured 30 Oct 2026, same 4 Kocken tests × 5 runs each:
 
 ## Staff panel
 
-Press and hold the **RKJH** wordmark on the picker for 1.5 s. It has:
+On the picker, press and hold the heading "Vem vill du prata med?" (or the small RKJH text bottom right) for 1.5 s, or press Ctrl+Shift+P. It has:
 - microphone picker with a live level meter (saved in this browser),
 - voice volume slider and a speaker test tone,
 - internet and voice-service status (`/api/health` mints a test token and shows the round-trip time),

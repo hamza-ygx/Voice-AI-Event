@@ -36,6 +36,17 @@ export default function Booth() {
     return () => clearInterval(id);
   }, [selected]);
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "p") {
+        e.preventDefault();
+        setStaff(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   const startPress = () => {
     press.current = setTimeout(() => setStaff(true), LONG_PRESS_MS);
   };
@@ -54,7 +65,9 @@ export default function Booth() {
         <ConversationScreen key={round} character={character} onExit={exit} handoff={handoff} onSwitch={switchTo} />
       ) : (
         <main className="screen picker">
-          <h1 className="picker-title">Vem vill du prata med?</h1>
+          <h1 className="picker-title" onPointerDown={startPress} onPointerUp={endPress} onPointerLeave={endPress}>
+            Vem vill du prata med?
+          </h1>
           <div className="picker-grid">
             {CHARACTERS.map((c) => (
               <button
