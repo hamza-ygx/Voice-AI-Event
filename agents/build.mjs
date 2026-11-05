@@ -48,7 +48,7 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
           prompt: `${read(`prompts/${id}.md`)}\n\n${shared}`,
           ...llm,
           temperature: customSecretId ? null : 0.4,
-          max_tokens: id === "psykologen" || id === "kompisen" ? 260 : 160,
+          max_tokens: id === "psykologen" || id === "kompisen" ? 320 : 240,
           thinking_budget: 0,
           timezone: "Europe/Stockholm",
           ignore_default_personality: true,

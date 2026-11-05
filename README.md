@@ -66,7 +66,7 @@ Pushing: the configs are applied through the ElevenLabs MCP connector (the CLI h
 
 | Setting | Value | Why |
 |---|---|---|
-| LLM | `gemini-3.1-flash-lite`, max 160 tokens (Psykologen 260 for the crisis line), backup `gemini-2.5-flash` | Fastest and cheapest model that passed every safety test (see below). Billed through ElevenLabs credits, no separate key |
+| LLM | `gemini-3.1-flash-lite`, max 240 tokens (Psykologen and Kompisen 320 for the crisis line), backup `gemini-2.5-flash` | Fastest and cheapest model that passed every safety test (see below). Billed through ElevenLabs credits, no separate key |
 | TTS | `eleven_v4_turbo` | Multilingual, low latency |
 | Turn detection | `turn_v3`, eagerness `normal`, `speculative_turn: true` | `patient` kept listening too long in noise. The app also ends the turn itself after 2 s of silence (see below) |
 | `turn_timeout` | `-1` | Never "are you still there?" while the mic is muted between clicks |
