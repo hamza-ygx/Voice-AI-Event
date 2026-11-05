@@ -13,6 +13,7 @@ const CHARACTERS = {
   kocken: { name: "Orben – Kocken", voice_id: "IKne3meq5aSn9XLyUdCD", library_voice_id: "ISDDl0xPNLMD73L5PQj4", stability: 0.4, speed: 1.05, keywords: ["entrecôte", "kyckling", "vin"], example: "What wine goes with steak?" },
   psykologen: { name: "Orben – Psykologen", voice_id: "EXAVITQu4vr4xnSDxMaL", library_voice_id: "kPdGSxhZAqy4bmPAf9iJ", stability: 0.6, speed: 0.92, keywords: ["chef", "somna", "stress"], example: "How do I say no to my boss?" },
   tradgardaren: { name: "Orben – Trädgårdaren", voice_id: "JBFqnCBsd6RMkjVDRZzb", library_voice_id: "oJEeOXECH9V31Oci9WHK", stability: 0.55, speed: 0.97, keywords: ["äppelträd", "beskära", "tomater"], example: "When should I prune my apple tree?" },
+  kompisen: { name: "Orben – Kompisen", voice_id: "TX3LPaxmHKxFdv7VOQHJ", library_voice_id: "XVFc6Ns4YKiFu3rt2g2W", stability: 0.5, speed: 1.0, keywords: ["namn", "betyder", "döpa"], example: "What does the name Elsa mean?" },
   conciergen: { name: "Orben – Conciergen", voice_id: "TX3LPaxmHKxFdv7VOQHJ", library_voice_id: "TIMFVcMCO4bdy7J79GWF", stability: 0.5, speed: 1.03, keywords: ["Barcelona", "Lissabon", "restaurang"], example: "Where should I eat in Barcelona?" },
 };
 
@@ -47,14 +48,14 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
           prompt: `${read(`prompts/${id}.md`)}\n\n${shared}`,
           ...llm,
           temperature: customSecretId ? null : 0.4,
-          max_tokens: id === "psykologen" ? 260 : 160,
+          max_tokens: id === "psykologen" || id === "kompisen" ? 260 : 160,
           thinking_budget: 0,
           timezone: "Europe/Stockholm",
           ignore_default_personality: true,
           backup_llm_config: customSecretId
             ? { preference: "disabled" }
             : { preference: "override", order: ["gemini-2.5-flash"] },
-          tool_ids: id === "conciergen" ? [switchTool.id, searchTool.id] : [switchTool.id],
+          tool_ids: id === "conciergen" || id === "kompisen" ? [switchTool.id, searchTool.id] : [switchTool.id],
           built_in_tools: {
             language_detection: {
               type: "system",
@@ -83,7 +84,7 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
         silence_end_call_timeout: 60,
         soft_timeout_config: { timeout_seconds: -1 },
       },
-      asr: { keywords: ["Kocken", "Psykologen", "Trädgårdaren", "Conciergen", ...c.keywords] },
+      asr: { keywords: ["Kocken", "Psykologen", "Trädgårdaren", "Conciergen", "Kompisen", ...c.keywords] },
       conversation: {
         max_duration_seconds: 600,
         client_events: [

@@ -59,7 +59,7 @@ export default function Booth() {
             {CHARACTERS.map((c) => (
               <button
                 key={c.id}
-                className={`pick${c.id === featured.id ? " featured" : ""}`}
+                className={`pick${c.id === "kompisen" ? " pick-main" : ""}${c.id === featured.id ? " featured" : ""}`}
                 onClick={() => {
                   setHandoff(null);
                   setSelected(c.id);

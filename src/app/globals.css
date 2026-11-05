@@ -125,8 +125,18 @@ button:focus-visible {
 
 .picker-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 15rem));
-  gap: 3rem;
+  grid-template-columns: repeat(5, minmax(0, 14rem));
+  gap: 2.25rem;
+  align-items: center;
+}
+
+.pick-main .pick-orb {
+  width: 16rem;
+  height: 16rem;
+}
+
+.pick-main .pick-name {
+  font-size: 1.9rem;
 }
 
 .pick {

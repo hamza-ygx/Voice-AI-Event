@@ -62,10 +62,10 @@ const HINTS: Record<OrbPhase, string> = {
   speaking: "Klicka för att avbryta",
 };
 
-export type Handoff = { from: string; greeting: string; topic: string; language: string };
+export type Handoff = { from: string; greeting: string; question: string; language: string };
 
 const HANDOFF_LANGUAGES = ["sv", "en", "de", "da", "no", "fi", "pl", "ar", "es", "fr"];
-const CHARACTER_WORDS = /(kocken|psykologen|trädgårdaren|conciergen|chef|cook|psychologist|therapist|gardener|concierge)/i;
+const CHARACTER_WORDS = /(kocken|psykologen|trädgårdaren|conciergen|kompisen|chef|cook|psychologist|therapist|gardener|concierge|buddy)/i;
 const SWITCH_MIN_MS = 300;
 const SWITCH_MAX_MS = 2500;
 const SWITCH_LATE_LINE_MAX_MS = 5000;
@@ -103,6 +103,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
   const pendingSwitch = useRef<{ to: CharacterId; handoff: Handoff } | null>(null);
   const switchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoListen = useRef(false);
+  const pendingQuestion = useRef("");
   const spokeThisTurn = useRef(false);
   const lastAgentText = useRef("");
   const switchAllowed = useRef(false);
@@ -172,6 +173,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
     ignoreParts.current = false;
     pendingSwitch.current = null;
     autoListen.current = Boolean(handoffRef.current);
+    pendingQuestion.current = handoffRef.current?.question ?? "";
     setError(null);
     setSubtitle("");
     setUserSaid("");
@@ -214,7 +216,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
             ? { agent: { firstMessage: handoffRef.current.greeting, language: handoffRef.current.language as never } }
             : undefined,
           clientTools: {
-            switch_character: (p: { character?: unknown; greeting?: unknown; topic?: unknown; language?: unknown }) => {
+            switch_character: (p: { character?: unknown; greeting?: unknown; question?: unknown; topic?: unknown; language?: unknown }) => {
               if (pendingSwitch.current) return "ok";
               if (!switchAllowed.current) {
                 conv.current?.sendContextualUpdate(
@@ -228,9 +230,10 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
               const greeting =
                 typeof p.greeting === "string" && p.greeting.trim()
                   ? p.greeting.trim().slice(0, 200)
-                  : `${character.name} sa att du behövde mig, vad kan jag hjälpa dig med?`;
-              const topic = typeof p.topic === "string" ? p.topic.trim().slice(0, 300) : "";
-              pendingSwitch.current = { to, handoff: { from: character.name, greeting, topic, language } };
+                  : `Hej, ${character.name} skickade dig till mig.`;
+              const asked = typeof p.question === "string" ? p.question : typeof p.topic === "string" ? p.topic : "";
+              const question = asked.trim().slice(0, 300);
+              pendingSwitch.current = { to, handoff: { from: character.name, greeting, question, language } };
               ignoreParts.current = true;
               setMic(false);
               const started = Date.now();
@@ -274,6 +277,14 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
                 conv.current?.setVolume({ volume: getVolume() * getGain(character.id, character.gain) });
               }
               if (pendingSwitch.current) return;
+              if (pendingQuestion.current && conv.current) {
+                const q = pendingQuestion.current;
+                pendingQuestion.current = "";
+                setUserSaid(q);
+                setPhase("thinking");
+                conv.current.sendUserMessage(q);
+                return;
+              }
               if (autoListen.current && conv.current) {
                 autoListen.current = false;
                 heardSpeech.current = false;
@@ -351,7 +362,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
         voice.setVolume({ volume: getVolume() * getGain(character.id, character.gain) });
         retries.current = 0;
         const h = handoffRef.current;
-        if (h?.topic) voice.sendContextualUpdate(`The visitor was just sent to you by ${h.from}. What they want help with: ${h.topic}`);
+        if (h) voice.sendContextualUpdate(`The visitor was just sent to you by ${h.from}.${h.question ? ` Their question: ${h.question}` : ""}`);
         audio.current = {
           input: () => voice.getInputVolume(),
           output: () => voice.getOutputVolume(),

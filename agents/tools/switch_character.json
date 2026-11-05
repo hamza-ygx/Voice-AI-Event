@@ -10,12 +10,48 @@
     "response_timeout_secs": 1,
     "parameters": {
       "type": "object",
-      "required": ["character", "language", "greeting", "topic"],
+      "required": [
+        "character",
+        "language",
+        "greeting",
+        "question"
+      ],
       "properties": {
-        "character": { "type": "string", "enum": ["kocken", "psykologen", "tradgardaren", "conciergen"], "description": "The character to hand over to." },
-        "language": { "type": "string", "enum": ["sv", "en", "de", "da", "no", "fi", "pl", "ar", "es", "fr"], "description": "ISO code of the language the visitor is speaking right now." },
-        "greeting": { "type": "string", "description": "The first line the new character will say, written in the visitor's language, naming you as the one who sent them. Swedish example from Psykologen to Kocken: 'Psykologen sa att du behövde mig, vad kan jag hjälpa dig med?' English example: 'Psykologen said you needed me, what can I help you with?'" },
-        "topic": { "type": "string", "description": "One short sentence summarising what the visitor wants help with, in the visitor's language. Empty string if unknown." }
+        "character": {
+          "type": "string",
+          "enum": [
+            "kocken",
+            "psykologen",
+            "tradgardaren",
+            "conciergen",
+            "kompisen"
+          ],
+          "description": "The character to hand over to."
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "sv",
+            "en",
+            "de",
+            "da",
+            "no",
+            "fi",
+            "pl",
+            "ar",
+            "es",
+            "fr"
+          ],
+          "description": "ISO code of the language the visitor is speaking right now."
+        },
+        "greeting": {
+          "type": "string",
+          "description": "One short first line for the new character, in the visitor's language, naming you as the one who sent them, without asking what they need. Example: 'Hej, Psykologen skickade dig till mig.' English: 'Hi, Psykologen sent you to me.'"
+        },
+        "question": {
+          "type": "string",
+          "description": "The visitor's question written out in full in the visitor's language, so the new character can answer it right away, e.g. 'Vad kan jag laga med kyckling och ris?'. Empty string if they had no specific question."
+        }
       }
     }
   }

@@ -1,8 +1,29 @@
 {
   "agents": [
-    { "name": "kocken", "config": "agent_configs/kocken.json", "id": "agent_6501m66vs83hft4axdergwgqy5r7" },
-    { "name": "psykologen", "config": "agent_configs/psykologen.json", "id": "agent_6001m66vx5z8ev7avtny59aean18" },
-    { "name": "tradgardaren", "config": "agent_configs/tradgardaren.json", "id": "agent_8201m66vxdvze349jsjm9ht083qk" },
-    { "name": "conciergen", "config": "agent_configs/conciergen.json", "id": "agent_7901m66vxp03fst9rrz6jahswfga" }
+    {
+      "name": "kocken",
+      "config": "agent_configs/kocken.json",
+      "id": "agent_6501m66vs83hft4axdergwgqy5r7"
+    },
+    {
+      "name": "psykologen",
+      "config": "agent_configs/psykologen.json",
+      "id": "agent_6001m66vx5z8ev7avtny59aean18"
+    },
+    {
+      "name": "tradgardaren",
+      "config": "agent_configs/tradgardaren.json",
+      "id": "agent_8201m66vxdvze349jsjm9ht083qk"
+    },
+    {
+      "name": "conciergen",
+      "config": "agent_configs/conciergen.json",
+      "id": "agent_7901m66vxp03fst9rrz6jahswfga"
+    },
+    {
+      "name": "kompisen",
+      "config": "agent_configs/kompisen.json",
+      "id": "agent_1001m6nv0yn5fmxajerb20p4bscc"
+    }
   ]
 }
