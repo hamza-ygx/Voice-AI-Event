@@ -32,6 +32,13 @@ const llm = customSecretId
   : { llm: "gemini-3.1-flash-lite" };
 
 const shared = read("prompts/_shared.md");
+const SPECIALIST_ONLY = ["- Stay inside your own field.", "- If the visitor asks about another character's field", "- If a question is outside every specialist's field", "- Never offer to send the visitor to yourself."];
+const kompisenShared = shared
+  .split("\n")
+  .filter((line) => !SPECIALIST_ONLY.some((p) => line.startsWith(p)))
+  .join("\n")
+  .replace("# Staying in your field", "# Other characters")
+  .replace("- If the visitor then says yes in any way, or at any point asks", "- You answer every question yourself and never offer to send the visitor anywhere. Only if the visitor at any point asks");
 const switchTool = JSON.parse(read("tools/switch_character.json"));
 const searchTool = JSON.parse(read("tools/web_search.json"));
 
@@ -45,7 +52,7 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
         language: "sv",
         disable_first_message_interruptions: false,
         prompt: {
-          prompt: `${read(`prompts/${id}.md`)}\n\n${shared}`,
+          prompt: `${read(`prompts/${id}.md`)}\n\n${id === "kompisen" ? kompisenShared : shared}`,
           ...llm,
           temperature: customSecretId ? null : 0.4,
           max_tokens: id === "psykologen" || id === "kompisen" ? 320 : 240,
