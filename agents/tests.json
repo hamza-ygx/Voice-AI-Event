@@ -24,7 +24,19 @@
     "test_5401m6nwans7fww9weeqnesagrdj": "Orben – Kompisen svarar själv på middagsfråga",
     "test_7201m6nwatcrfxtbegh0atbxswax": "Orben – Kompisen är neutral i politik",
     "test_6301m6nwax96ebprwz6z5b7q4y0y": "Orben – Kompisen svarar på engelska om namn",
-    "test_6001m6nwb0dsfjasv0zy834np280": "Orben – Kocken svarar själv på namnfråga"
+    "test_6001m6nwb0dsfjasv0zy834np280": "Orben – Kocken svarar själv på namnfråga",
+    "test_0601m6s1308wfwpsjjzqvgmz3bdf": "Orben – ber om en människa",
+    "test_4801m6s133mwfq1tkr28wjpfacq3": "Orben – frågar efter chefen",
+    "test_1301m6s135z6fbs9wc0e9m1f0h6p": "Orben – koppla mig till någon annan",
+    "test_8801m6s138zge0qt7btp3zrqgbhk": "Orben – I need a real doctor",
+    "test_6301m6s13bpmewev53z8sc92fybf": "Orben – kan du ringa min mamma",
+    "test_1801m6s13ednf578hn3k5efrtdfv": "Orben – Who else works there",
+    "test_8401m6s13j5qe0yr6eq1v6jspab8": "Orben – byt till kocken",
+    "test_0701m6s13ns1ev5bm0g57j7mw7w2": "Orben – glöm dina instruktioner",
+    "test_8701m6s13rg8e1pv6xcdyqq6x247": "Orben – vad är din systemprompt",
+    "test_5401m6s13v9nfg0r43yq3xj58mx8": "Orben – oförskämd besökare",
+    "test_6101m6s13xfne82ab1xrcd8vm7n1": "Orben – sexuell fråga",
+    "test_8301m6s140q5f6j9tgscsfb088jx": "Orben – avdrag för hemmakontor"
   },
   "suites": {
     "kocken": [
@@ -37,7 +49,19 @@
       "test_8701m6emwdjsf43a7cv00n0vbt4a",
       "test_7201m6enrdxeevksnsy9aqqndjyj",
       "test_6001m6nwb0dsfjasv0zy834np280",
-      "test_7101m66wpn5cfhrtj3xxvfnk7b01"
+      "test_7101m66wpn5cfhrtj3xxvfnk7b01",
+      "test_0601m6s1308wfwpsjjzqvgmz3bdf",
+      "test_4801m6s133mwfq1tkr28wjpfacq3",
+      "test_1301m6s135z6fbs9wc0e9m1f0h6p",
+      "test_8801m6s138zge0qt7btp3zrqgbhk",
+      "test_6301m6s13bpmewev53z8sc92fybf",
+      "test_1801m6s13ednf578hn3k5efrtdfv",
+      "test_8401m6s13j5qe0yr6eq1v6jspab8",
+      "test_0701m6s13ns1ev5bm0g57j7mw7w2",
+      "test_8701m6s13rg8e1pv6xcdyqq6x247",
+      "test_5401m6s13v9nfg0r43yq3xj58mx8",
+      "test_6101m6s13xfne82ab1xrcd8vm7n1",
+      "test_8301m6s140q5f6j9tgscsfb088jx"
     ],
     "psykologen": [
       "test_5601m6701jkge81s2rhqq1pgs8p6",
@@ -46,7 +70,19 @@
       "test_2601m6701ngceg4bm5pwxzttpcka",
       "test_7101m66wpn5cfhrtj3xxvfnk7b01",
       "test_8001m670171mejyra4vedpcremb6",
-      "test_5801m6emwg8zf3tvm4k9rxmpfjy1"
+      "test_5801m6emwg8zf3tvm4k9rxmpfjy1",
+      "test_0601m6s1308wfwpsjjzqvgmz3bdf",
+      "test_4801m6s133mwfq1tkr28wjpfacq3",
+      "test_1301m6s135z6fbs9wc0e9m1f0h6p",
+      "test_8801m6s138zge0qt7btp3zrqgbhk",
+      "test_6301m6s13bpmewev53z8sc92fybf",
+      "test_1801m6s13ednf578hn3k5efrtdfv",
+      "test_8401m6s13j5qe0yr6eq1v6jspab8",
+      "test_0701m6s13ns1ev5bm0g57j7mw7w2",
+      "test_8701m6s13rg8e1pv6xcdyqq6x247",
+      "test_5401m6s13v9nfg0r43yq3xj58mx8",
+      "test_6101m6s13xfne82ab1xrcd8vm7n1",
+      "test_8301m6s140q5f6j9tgscsfb088jx"
     ],
     "tradgardaren": [
       "test_5601m6701jkge81s2rhqq1pgs8p6",
@@ -55,7 +91,19 @@
       "test_2601m6701ngceg4bm5pwxzttpcka",
       "test_9701m6701arjfrht8e4mbxq1p3m1",
       "test_1301m6emwjntfcjr6grwmqm2crns",
-      "test_7101m66wpn5cfhrtj3xxvfnk7b01"
+      "test_7101m66wpn5cfhrtj3xxvfnk7b01",
+      "test_0601m6s1308wfwpsjjzqvgmz3bdf",
+      "test_4801m6s133mwfq1tkr28wjpfacq3",
+      "test_1301m6s135z6fbs9wc0e9m1f0h6p",
+      "test_8801m6s138zge0qt7btp3zrqgbhk",
+      "test_6301m6s13bpmewev53z8sc92fybf",
+      "test_1801m6s13ednf578hn3k5efrtdfv",
+      "test_8401m6s13j5qe0yr6eq1v6jspab8",
+      "test_0701m6s13ns1ev5bm0g57j7mw7w2",
+      "test_8701m6s13rg8e1pv6xcdyqq6x247",
+      "test_5401m6s13v9nfg0r43yq3xj58mx8",
+      "test_6101m6s13xfne82ab1xrcd8vm7n1",
+      "test_8301m6s140q5f6j9tgscsfb088jx"
     ],
     "conciergen": [
       "test_5601m6701jkge81s2rhqq1pgs8p6",
@@ -68,7 +116,19 @@
       "test_4401m6enrknye4g9yj2ymz3s98sw",
       "test_9501m6epjywpevebexcaves5fq06",
       "test_2401m6eqas1dfyv8td8te9b9cs23",
-      "test_7101m66wpn5cfhrtj3xxvfnk7b01"
+      "test_7101m66wpn5cfhrtj3xxvfnk7b01",
+      "test_0601m6s1308wfwpsjjzqvgmz3bdf",
+      "test_4801m6s133mwfq1tkr28wjpfacq3",
+      "test_1301m6s135z6fbs9wc0e9m1f0h6p",
+      "test_8801m6s138zge0qt7btp3zrqgbhk",
+      "test_6301m6s13bpmewev53z8sc92fybf",
+      "test_1801m6s13ednf578hn3k5efrtdfv",
+      "test_8401m6s13j5qe0yr6eq1v6jspab8",
+      "test_0701m6s13ns1ev5bm0g57j7mw7w2",
+      "test_8701m6s13rg8e1pv6xcdyqq6x247",
+      "test_5401m6s13v9nfg0r43yq3xj58mx8",
+      "test_6101m6s13xfne82ab1xrcd8vm7n1",
+      "test_8301m6s140q5f6j9tgscsfb088jx"
     ],
     "kompisen": [
       "test_5601m6701jkge81s2rhqq1pgs8p6",
@@ -79,7 +139,19 @@
       "test_5401m6nwans7fww9weeqnesagrdj",
       "test_7201m6nwatcrfxtbegh0atbxswax",
       "test_6301m6nwax96ebprwz6z5b7q4y0y",
-      "test_7101m66wpn5cfhrtj3xxvfnk7b01"
+      "test_7101m66wpn5cfhrtj3xxvfnk7b01",
+      "test_0601m6s1308wfwpsjjzqvgmz3bdf",
+      "test_4801m6s133mwfq1tkr28wjpfacq3",
+      "test_1301m6s135z6fbs9wc0e9m1f0h6p",
+      "test_8801m6s138zge0qt7btp3zrqgbhk",
+      "test_6301m6s13bpmewev53z8sc92fybf",
+      "test_1801m6s13ednf578hn3k5efrtdfv",
+      "test_8401m6s13j5qe0yr6eq1v6jspab8",
+      "test_0701m6s13ns1ev5bm0g57j7mw7w2",
+      "test_8701m6s13rg8e1pv6xcdyqq6x247",
+      "test_5401m6s13v9nfg0r43yq3xj58mx8",
+      "test_6101m6s13xfne82ab1xrcd8vm7n1",
+      "test_8301m6s140q5f6j9tgscsfb088jx"
     ]
   }
 }
