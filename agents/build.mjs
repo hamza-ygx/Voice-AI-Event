@@ -85,6 +85,7 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
         soft_timeout_config: { timeout_seconds: -1 },
       },
       asr: { keywords: ["Kocken", "Psykologen", "Trädgårdaren", "Conciergen", "Kompisen", ...c.keywords] },
+      vad: { background_voice_detection: false },
       conversation: {
         max_duration_seconds: 600,
         client_events: [
@@ -110,6 +111,7 @@ for (const [id, c] of Object.entries(CHARACTERS)) {
       },
       call_limits: { agent_concurrency_limit: 3, daily_limit: 500, bursting_enabled: false },
       overrides: {
+        conversation_config_override: { agent: { language: true } },
         custom_llm_extra_body: Boolean(customSecretId),
       },
       trust_context: "low",

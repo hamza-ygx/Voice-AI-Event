@@ -9,6 +9,9 @@ import StaffPanel from "./StaffPanel";
 
 const ATTRACT_MS = 4500;
 const LONG_PRESS_MS = 1500;
+const LANG_RESET_MS = 60_000;
+
+export type Lang = "sv" | "en";
 
 export default function Booth() {
   const [selected, setSelected] = useState<CharacterId | null>(null);
@@ -16,6 +19,7 @@ export default function Booth() {
   const [staff, setStaff] = useState(false);
   const [handoff, setHandoff] = useState<Handoff | null>(null);
   const [tick, setTick] = useState(0);
+  const [lang, setLang] = useState<Lang>("sv");
   const press = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const exit = useCallback(() => {
@@ -37,6 +41,20 @@ export default function Booth() {
   }, [selected]);
 
   useEffect(() => {
+    if (selected || lang === "sv") return;
+    let timer = setTimeout(() => setLang("sv"), LANG_RESET_MS);
+    const reset = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => setLang("sv"), LANG_RESET_MS);
+    };
+    window.addEventListener("pointerdown", reset);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("pointerdown", reset);
+    };
+  }, [selected, lang]);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "p") {
         e.preventDefault();
@@ -56,17 +74,26 @@ export default function Booth() {
 
   const character = CHARACTERS.find((c) => c.id === selected);
   const featured = CHARACTERS[tick % CHARACTERS.length];
-  const featuredQuestion = featured.examples[Math.floor(tick / CHARACTERS.length) % featured.examples.length];
+  const featuredQuestion =
+    lang === "en" ? featured.exampleEn : featured.examples[Math.floor(tick / CHARACTERS.length) % featured.examples.length];
 
   return (
     <>
       <Kiosk />
       {character ? (
-        <ConversationScreen key={round} character={character} onExit={exit} handoff={handoff} onSwitch={switchTo} />
+        <ConversationScreen key={round} character={character} lang={lang} onExit={exit} handoff={handoff} onSwitch={switchTo} />
       ) : (
         <main className="screen picker">
+          <div className="lang-toggle" role="group" aria-label="Språk / Language">
+            <button className={lang === "sv" ? "on" : ""} onClick={() => setLang("sv")}>
+              Svenska
+            </button>
+            <button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>
+              English
+            </button>
+          </div>
           <h1 className="picker-title" onPointerDown={startPress} onPointerUp={endPress} onPointerLeave={endPress}>
-            Vem vill du prata med?
+            {lang === "en" ? "Who do you want to talk to?" : "Vem vill du prata med?"}
           </h1>
           <div className="picker-grid">
             {CHARACTERS.map((c) => (
@@ -81,12 +108,12 @@ export default function Booth() {
               >
                 <Orb color={c.color} phase="idle" radius={0.34} density={1} className="pick-orb" />
                 <div className="pick-name">{c.name}</div>
-                <div className="pick-example">”{c.example}”</div>
+                <div className="pick-example">”{lang === "en" ? c.exampleEn : c.example}”</div>
               </button>
             ))}
           </div>
           <div className="attract" key={tick} style={{ "--c": featured.color } as React.CSSProperties}>
-            Fråga <span>{featured.name}</span>: ”{featuredQuestion}”
+            {lang === "en" ? "Ask" : "Fråga"} <span>{featured.name}</span>: ”{featuredQuestion}”
           </div>
           <div
             className="wordmark"

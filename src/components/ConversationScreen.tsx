@@ -7,11 +7,12 @@ import Subtitles, { type RevealMode } from "./Subtitles";
 import { cueListenStart, cueListenStop } from "@/lib/sounds";
 import { getGain, getMicId, getVolume } from "@/lib/settings";
 import { isCharacterId, type Character, type CharacterId } from "@/lib/characters";
+import type { Lang } from "./Booth";
 
 const IDLE_LIMIT_MS = 60_000;
 const SPEECH_VAD = 0.5;
 const STILL_TALKING_VAD = 0.25;
-const MIC_OPEN_DELAY_MS = 180;
+const MIC_OPEN_DELAY_MS = 60;
 const AUTO_RETRIES = 1;
 const END_SILENCE_MS = 2000;
 const NO_SPEECH_MS = 8000;
@@ -54,12 +55,26 @@ const ERRORS: Record<ErrorKind, { title: string; body: string }> = {
   },
 };
 
-const HINTS: Record<OrbPhase, string> = {
-  connecting: "Ansluter…",
-  idle: "Klicka för att prata",
-  listening: "Jag lyssnar…",
-  thinking: "Funderar…",
-  speaking: "Klicka för att avbryta",
+const HINTS: Record<Lang, Record<OrbPhase, string>> = {
+  sv: {
+    connecting: "Ansluter…",
+    idle: "Klicka för att prata",
+    listening: "Jag lyssnar…",
+    thinking: "Funderar…",
+    speaking: "Klicka för att avbryta",
+  },
+  en: {
+    connecting: "Connecting…",
+    idle: "Tap to talk",
+    listening: "I'm listening…",
+    thinking: "Thinking…",
+    speaking: "Tap to interrupt",
+  },
+};
+
+const CHIPS: Record<Lang, { back: string; restart: string; tips: string }> = {
+  sv: { back: "← Byt person", restart: "Börja om", tips: "s tips" },
+  en: { back: "← Switch", restart: "Start over", tips: "'s tips" },
 };
 
 export type Handoff = { from: string; greeting: string; question: string; language: string };
@@ -74,12 +89,13 @@ const SWITCH_QUIET_LEVEL = 0.01;
 
 type Props = {
   character: Character;
+  lang?: Lang;
   onExit: () => void;
   handoff?: Handoff | null;
   onSwitch?: (to: CharacterId, handoff: Handoff) => void;
 };
 
-export default function ConversationScreen({ character, onExit, handoff, onSwitch }: Props) {
+export default function ConversationScreen({ character, lang = "sv", onExit, handoff, onSwitch }: Props) {
   const [phase, setPhaseState] = useState<OrbPhase>("connecting");
   const [subtitle, setSubtitle] = useState("");
   const [userSaid, setUserSaid] = useState("");
@@ -212,9 +228,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
           textOnly: false,
           useWakeLock: true,
           inputDeviceId: getMicId(),
-          overrides: handoffRef.current
-            ? { agent: { firstMessage: handoffRef.current.greeting, language: handoffRef.current.language as never } }
-            : undefined,
+          overrides: lang === "en" ? { agent: { language: "en" as never } } : undefined,
           clientTools: {
             switch_character: (p: { character?: unknown; greeting?: unknown; question?: unknown; topic?: unknown; language?: unknown }) => {
               if (pendingSwitch.current) return "ok";
@@ -361,6 +375,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
         voice.setMicMuted(true);
         voice.setVolume({ volume: getVolume() * getGain(character.id, character.gain) });
         retries.current = 0;
+        if (lang === "en") voice.sendContextualUpdate("The visitor chose English on the screen. Answer in English unless they speak another language.");
         const h = handoffRef.current;
         if (h) voice.sendContextualUpdate(`The visitor was just sent to you by ${h.from}.${h.question ? ` Their question: ${h.question}` : ""}`);
         audio.current = {
@@ -383,7 +398,7 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
       if (switchTimer.current) clearTimeout(switchTimer.current);
       closeSession();
     };
-  }, [character.id, character.name, attempt, closeSession, fail, onExit, setPhase, runSwitch]);
+  }, [character.id, character.name, lang, attempt, closeSession, fail, onExit, setPhase, runSwitch]);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -477,11 +492,11 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
     <main className="screen conversation" style={{ "--c": character.color, "--g": character.glow } as React.CSSProperties}>
       <div className="topbar">
         <button className="chip" onClick={leave}>
-          ← Byt person
+          {CHIPS[lang].back}
         </button>
         <div className="who">{character.name}</div>
         <button className="chip" onClick={leave}>
-          Börja om
+          {CHIPS[lang].restart}
         </button>
       </div>
 
@@ -513,15 +528,15 @@ export default function ConversationScreen({ character, onExit, handoff, onSwitc
       ) : (
         <>
           <div className="stage">
-            <Orb color={character.color} phase={phase} audio={audio} onClick={onOrbClick} label={HINTS[phase]} />
-            <div className={`hint hint-${phase}`}>{HINTS[phase]}</div>
+            <Orb color={character.color} phase={phase} audio={audio} onClick={onOrbClick} label={HINTS[lang][phase]} />
+            <div className={`hint hint-${phase}`}>{HINTS[lang][phase]}</div>
           </div>
           <Subtitles
             text={answer}
             userSaid={userSaid}
             mode={reveal}
             rate={character.speechRate}
-            takeHome={phase === "idle" && answer ? `${character.name}s tips:\n${answer}` : null}
+            takeHome={phase === "idle" && answer ? `${character.name}${CHIPS[lang].tips}:\n${answer}` : null}
           />
         </>
       )}

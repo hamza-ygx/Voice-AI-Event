@@ -6,6 +6,7 @@ export type Character = {
   color: string;
   glow: string;
   example: string;
+  exampleEn: string;
   examples: string[];
   speechRate: number;
   gain: number;
@@ -18,6 +19,7 @@ export const CHARACTERS: Character[] = [
     color: "#F5C542",
     glow: "rgba(245, 197, 66, 0.55)",
     example: "Vilket vin passar till entrecôte?",
+    exampleEn: "What wine goes with steak?",
     examples: [
       "Vilket vin passar till entrecôte?",
       "Vad lagar jag av kyckling och ris?",
@@ -33,6 +35,7 @@ export const CHARACTERS: Character[] = [
     color: "#F27BB5",
     glow: "rgba(242, 123, 181, 0.55)",
     example: "Hur säger jag nej till min chef?",
+    exampleEn: "How do I say no to my boss?",
     examples: [
       "Hur säger jag nej till min chef?",
       "Mitt barn vägrar somna tidigt, vad gör jag?",
@@ -48,6 +51,7 @@ export const CHARACTERS: Character[] = [
     color: "#A78BFA",
     glow: "rgba(167, 139, 250, 0.55)",
     example: "Vad ska jag döpa min dotter till?",
+    exampleEn: "What does the name Elsa mean?",
     examples: [
       "Vad ska jag döpa min dotter till?",
       "Vad betyder namnet Elsa?",
@@ -63,6 +67,7 @@ export const CHARACTERS: Character[] = [
     color: "#5FCB7A",
     glow: "rgba(95, 203, 122, 0.55)",
     example: "När ska jag beskära äppelträden?",
+    exampleEn: "When should I prune my apple tree?",
     examples: [
       "När ska jag beskära äppelträden?",
       "Varför gulnar mina tomater?",
@@ -78,6 +83,7 @@ export const CHARACTERS: Character[] = [
     color: "#22B8CF",
     glow: "rgba(34, 184, 207, 0.55)",
     example: "Var ska jag äta i Barcelona?",
+    exampleEn: "Where should I eat in Barcelona?",
     examples: [
       "Var ska jag äta i Barcelona?",
       "Vad gör jag en helg i London?",

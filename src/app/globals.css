@@ -553,3 +553,26 @@ body.cursor-hidden * {
   font-size: 0.9rem;
   color: var(--muted);
 }
+
+.lang-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  padding: 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.lang-toggle button {
+  padding: 0.6rem 1.3rem;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 1rem;
+  transition: color 0.2s, background 0.2s;
+}
+
+.lang-toggle button.on {
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.1);
+}
