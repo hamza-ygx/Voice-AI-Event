@@ -11,17 +11,12 @@ import type { Lang } from "./Booth";
 
 const IDLE_LIMIT_MS = 60_000;
 const SPEECH_VAD = 0.5;
-const STILL_TALKING_VAD = 0.25;
 const MIC_OPEN_DELAY_MS = 60;
 const AUTO_RETRIES = 1;
-const END_SILENCE_MS = 2000;
+const ACTIVITY_PING_MS = 1500;
 const NO_SPEECH_MS = 8000;
-const MAX_LISTEN_MS = 20_000;
+const MAX_LISTEN_MS = 45_000;
 const MAX_THINK_MS = 10_000;
-const DANGLING_SILENCE_MS = 3000;
-const DANGLING_MIN_OPEN_MS = 1500;
-const DANGLING =
-  /(?:^|[\s,])(och|och så|men|eller|att|eftersom|fast|som|när|typ|alltså|liksom|asså|ehm|eh|öh|öhm|hmm|en|ett|and|but|or|because|um|uh|the)[\s,.…-]*$|(\.\.\.|…|-)\s*$/i;
 
 const spoken = (text: string) =>
   text
@@ -59,14 +54,14 @@ const HINTS: Record<Lang, Record<OrbPhase, string>> = {
   sv: {
     connecting: "Ansluter…",
     idle: "Klicka för att prata",
-    listening: "Jag lyssnar…",
+    listening: "Klicka när du är klar",
     thinking: "Funderar…",
     speaking: "Klicka för att avbryta",
   },
   en: {
     connecting: "Connecting…",
     idle: "Tap to talk",
-    listening: "I'm listening…",
+    listening: "Tap when you're done",
     thinking: "Thinking…",
     speaking: "Tap to interrupt",
   },
@@ -114,8 +109,6 @@ export default function ConversationScreen({ character, lang = "sv", onExit, han
   const retries = useRef(0);
   const micTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const phaseSince = useRef(Date.now());
-  const lastSpeech = useRef(0);
-  const holdUntil = useRef(0);
   const pendingSwitch = useRef<{ to: CharacterId; handoff: Handoff } | null>(null);
   const switchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoListen = useRef(false);
@@ -127,6 +120,8 @@ export default function ConversationScreen({ character, lang = "sv", onExit, han
   const onSwitchRef = useRef(onSwitch);
   onSwitchRef.current = onSwitch;
   const heldText = useRef("");
+  const lastPing = useRef(0);
+  const quietText = useRef("");
 
   const setPhase = useCallback((p: OrbPhase) => {
     if (phaseRef.current !== p) phaseSince.current = Date.now();
@@ -280,8 +275,9 @@ export default function ConversationScreen({ character, lang = "sv", onExit, han
             if (mode === "speaking") {
               spokeThisTurn.current = true;
               if (pendingSwitch.current) return;
-              holdUntil.current = 0;
               heldText.current = "";
+              if (quietText.current && !interrupting.current) setSubtitle(quietText.current);
+              quietText.current = "";
               setMic(false);
               touch();
               if (!interrupting.current) setPhase("speaking");
@@ -314,10 +310,7 @@ export default function ConversationScreen({ character, lang = "sv", onExit, han
             if (!micOpen.current) return;
             if (vadScore > SPEECH_VAD) {
               heardSpeech.current = true;
-              lastSpeech.current = Date.now();
               touch();
-            } else if (heardSpeech.current && vadScore > STILL_TALKING_VAD) {
-              lastSpeech.current = Date.now();
             }
           },
           onMessage: ({ source, message }) => {
@@ -326,23 +319,16 @@ export default function ConversationScreen({ character, lang = "sv", onExit, han
               spokeThisTurn.current = false;
               ignoreParts.current = false;
               const said = [heldText.current, message.trim()].filter(Boolean).join(" ");
-              holdUntil.current = 0;
               heldText.current = "";
               setUserSaid(said);
               const offered = CHARACTER_WORDS.test(lastAgentText.current) && lastAgentText.current.includes("?");
               switchAllowed.current = offered || CHARACTER_WORDS.test(said);
               lastAgentText.current = "";
-              if (phaseRef.current !== "speaking" && !interrupting.current && DANGLING.test(said)) {
-                const c = conv.current;
-                if (c) {
-                  heldText.current = said;
-                  holdUntil.current = Math.max(Date.now() + DANGLING_MIN_OPEN_MS, (lastSpeech.current || Date.now()) + DANGLING_SILENCE_MS);
-                  heardSpeech.current = false;
-                  c.sendUserActivity();
-                  setMic(true);
-                  setPhase("listening");
-                  return;
-                }
+              if (phaseRef.current === "listening" && micOpen.current && !interrupting.current) {
+                heldText.current = said;
+                conv.current?.sendUserActivity();
+                lastPing.current = Date.now();
+                return;
               }
               if (interrupting.current) {
                 interrupting.current = false;
@@ -352,12 +338,19 @@ export default function ConversationScreen({ character, lang = "sv", onExit, han
               if (phaseRef.current !== "speaking") setPhase("thinking");
             } else {
               lastAgentText.current = message;
-              if (!ignoreParts.current) setSubtitle(message);
+              if (ignoreParts.current) return;
+              if (phaseRef.current === "listening") quietText.current = message;
+              else setSubtitle(message);
             }
           },
           onAgentChatResponsePart: ({ type, text }) => {
             if (ignoreParts.current) return;
             touch();
+            if (phaseRef.current === "listening") {
+              if (type === "start") quietText.current = "";
+              else if (type === "delta") quietText.current += text;
+              return;
+            }
             if (type === "start") setSubtitle("");
             else if (type === "delta") setSubtitle((s) => s + text);
           },
@@ -424,21 +417,12 @@ export default function ConversationScreen({ character, lang = "sv", onExit, han
       const p = phaseRef.current;
       const now = Date.now();
       const elapsed = now - phaseSince.current;
-      if (p === "listening" && micOpen.current && holdUntil.current) {
-        if (heardSpeech.current) {
-          holdUntil.current = 0;
-        } else if (now >= holdUntil.current) {
-          holdUntil.current = 0;
-          heldText.current = "";
-          setMic(false);
-          setPhase("thinking");
-        } else if (now + 2000 <= holdUntil.current + 200) {
+      if (p === "listening" && micOpen.current) {
+        if (heardSpeech.current && now - lastPing.current > ACTIVITY_PING_MS) {
           conv.current?.sendUserActivity();
+          lastPing.current = now;
         }
-      } else if (p === "listening" && micOpen.current) {
-        const done = heardSpeech.current
-          ? now - lastSpeech.current > END_SILENCE_MS || elapsed > MAX_LISTEN_MS
-          : elapsed > NO_SPEECH_MS;
+        const done = heardSpeech.current ? elapsed > MAX_LISTEN_MS : elapsed > NO_SPEECH_MS;
         if (done) {
           setMic(false);
           cueListenStop();
@@ -456,9 +440,9 @@ export default function ConversationScreen({ character, lang = "sv", onExit, han
     if (!c) return;
     touch();
     const p = phaseRef.current;
-    holdUntil.current = 0;
-    heldText.current = "";
     if (p === "idle") {
+      heldText.current = "";
+      quietText.current = "";
       heardSpeech.current = false;
       cueListenStart();
       setMic(true);
@@ -468,6 +452,8 @@ export default function ConversationScreen({ character, lang = "sv", onExit, han
       cueListenStop();
       setPhase(heardSpeech.current ? "thinking" : "idle");
     } else if (p === "speaking" || p === "thinking") {
+      heldText.current = "";
+      quietText.current = "";
       interrupting.current = true;
       ignoreParts.current = true;
       c.setVolume({ volume: 0 });

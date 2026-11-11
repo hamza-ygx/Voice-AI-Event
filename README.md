@@ -68,7 +68,7 @@ Pushing: the configs are applied through the ElevenLabs MCP connector (the CLI h
 |---|---|---|
 | LLM | `gemini-3.1-flash-lite`, max 240 tokens (Psykologen and Kompisen 320 for the crisis line), backup `gemini-2.5-flash` | Fastest and cheapest model that passed every safety test (see below). Billed through ElevenLabs credits, no separate key |
 | TTS | `eleven_v4_turbo` | Multilingual, low latency |
-| Turn detection | `turn_v3`, eagerness `normal`, `speculative_turn: true` | `patient` kept listening too long in noise. The app also ends the turn itself after 2 s of silence (see below) |
+| Turn detection | `turn_v3`, eagerness `normal`, `speculative_turn: true` | `patient` kept listening too long in noise. The visitor ends the turn by tapping again (see below) |
 | `turn_timeout` | `-1` | Never "are you still there?" while the mic is muted between clicks |
 | `silence_end_call_timeout` | `60` s | Server-side backstop for the 60 s idle reset |
 | `max_duration_seconds` | `600` | Cost cap |
@@ -110,11 +110,11 @@ Measured 30 Oct 2026, same 4 Kocken tests × 5 runs each:
 ## How the conversation works
 
 - Picking a character asks for the mic once and opens a session. The mic starts muted.
-- Click the orb → mic opens ("Jag lyssnar…"). Turn detection decides when the visitor is done.
+- Click the orb → mic opens ("Klicka när du är klar" / "Tap when you're done"). The visitor taps again when done.
 - Agent answers → mic mutes, subtitles stream the answer.
 - Click while the agent talks → its audio is muted instantly and the mic opens. The server stops generating when the visitor starts speaking (ElevenLabs has no client-side "stop generation" call; if the visitor stays silent, the rest of the answer is generated but not heard).
 - "Byt person", "Börja om", 60 s without speech from either side, or the 10 min cap → session ends, everything is cleared, back to the picker.
-- The app ends the visitor's turn itself after 2 s without speech (normal pauses mid-sentence are fine), after 20 s of listening at most. If the transcript ends on an unfinished word ("och", "men", "att", "and", "…"), the mic reopens and the agent is held (`sendUserActivity`) until 3 s of silence; anything said in that window is read together with the first part, and goes back to idle if nobody speaks within 8 s. If no answer arrives within 10 s it returns to idle.
+- While the mic is open the agent is held (`sendUserActivity` every 1.5 s), so pauses never trigger an answer; any text transcribed mid-way is collected and shown together. The tap closes the mic and the agent answers. Safety limits: back to idle if nobody speaks within 8 s, the mic closes by itself after 45 s, and if no answer arrives within 10 s it returns to idle.
 - Short rising/falling tones mark mic open/closed. The mic opens 180 ms after the tone so the tone isn't transcribed.
 - Subtitles reveal at the character's speaking pace, show "Du sa: …" (what speech recognition heard), and after the answer a QR code opens `/tips#<tip>` on the visitor's phone, with buttons to save it to Notes (share sheet), copy it or download it as a .txt. The tip lives only in the URL fragment, which browsers never send to the server, so nothing is stored or logged.
 - No hand-offs: every character answers every question itself in its own voice (speciality = flavour, not a limit). All five have web search and the crisis and emergency rules. The `switch_character` client code is kept but no agent has the tool any more.
